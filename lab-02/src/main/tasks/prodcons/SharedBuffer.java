@@ -9,8 +9,13 @@ public class SharedBuffer {
   private final Condition notFull  = lock.newCondition();
   private final Condition notEmpty = lock.newCondition();
 
-  private final Object[] items = new Object[100];
+  private final Object[] items;
   private int firstEmptyIndex, firstOccupied, objectCount;
+
+  public SharedBuffer(int size) {
+    items = new Object[size];
+    firstEmptyIndex = firstOccupied = objectCount = 0;
+  }
 
   public void put(Object x) throws InterruptedException {
     lock.lock();
