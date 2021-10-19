@@ -19,7 +19,6 @@ public class CustomSemaphore {
   public void acquire() throws InterruptedException {
     lock.lock();
     while (resourceCount == 0) resourcesAvailable.await();
-
     --resourceCount;
   }
 
