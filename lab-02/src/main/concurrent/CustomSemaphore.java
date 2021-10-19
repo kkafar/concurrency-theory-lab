@@ -26,8 +26,8 @@ public class CustomSemaphore {
   public void release() throws IllegalMonitorStateException {
     if (lock.isHeldByCurrentThread()) {
       ++resourceCount;
-      lock.unlock();
       resourcesAvailable.signalAll();
+      lock.unlock();
     } else {
       throw new IllegalMonitorStateException("release method called from unauthorized thread");
     }
