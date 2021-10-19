@@ -12,37 +12,55 @@ public class SharedBuffer {
   private final Object[] items;
   private int firstEmptyIndex, firstOccupied, objectCount;
 
-  public SharedBuffer(int size) {
-    items = new Object[size];
+  public SharedBuffer(int baseSize) {
+    items = new Object[2 * baseSize];
     firstEmptyIndex = firstOccupied = objectCount = 0;
   }
 
-  public void put(Object x) throws InterruptedException {
+  public void put(Object[] objects) throws InterruptedException {
+    if (objects.length == 0) return;
     lock.lock();
     try {
-      while (objectCount == items.length)
+      while (objectCount + objects.length > items.length)
         notFull.await();
-      items[firstEmptyIndex] = x;
-      if (++firstEmptyIndex == items.length) firstEmptyIndex = 0;
-      ++objectCount;
+
+      putNoChecks(objects);
       notEmpty.signal();
     } finally {
       lock.unlock();
     }
   }
 
-  public Object take() throws InterruptedException {
+  public Object[] take(int n) throws InterruptedException {
+    if (n <= 0) throw new IllegalArgumentException("n parameter MUST be > 0");
     lock.lock();
     try {
-      while (objectCount == 0)
+      while (objectCount < n)
         notEmpty.await();
-      Object x = items[firstOccupied];
-      if (++firstOccupied == items.length) firstOccupied = 0;
-      --objectCount;
+
+      Object[] rt = takeNoChecks(n);
       notFull.signal();
-      return x;
+      return rt;
     } finally {
       lock.unlock();
     }
+  }
+
+  private void putNoChecks(Object[] objects) {
+    for (Object object : objects) {
+      items[firstEmptyIndex++] = object;
+      firstEmptyIndex %= items.length;
+    }
+    objectCount += objects.length;
+  }
+
+  private Object[] takeNoChecks(int n) {
+    Object[] rt = new Object[n];
+    for (int i = 0; i < n; ++i) {
+      rt[i] = items[firstOccupied++];
+      firstOccupied %= items.length;
+    }
+    objectCount -= n;
+    return rt;
   }
 }
