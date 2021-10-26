@@ -1,12 +1,12 @@
 package main;
 
-import main.tasks.actors.Consumer;
-import main.tasks.actors.Producer;
-import main.tasks.buffer.SynchronizedCyclicBuffer;
+import main.labtask2.actors.Consumer;
+import main.labtask2.actors.Producer;
+import main.labtask2.buffer.SynchronizedCyclicBuffer;
 
 public class Main {
-  private static final int N_PRODUCERS = 1;
-  private static final int N_CONSUMERS = 1;
+  private static final int N_PRODUCERS = 2;
+  private static final int N_CONSUMERS = 3;
   private static final int BUFFER_SIZE = 10;
 
   public static void main(String[] args) throws InterruptedException {
@@ -48,5 +48,4 @@ public class Main {
   public static void log(String message) {
     System.out.println(message);
   }
-
 }
