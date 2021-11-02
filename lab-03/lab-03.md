@@ -14,12 +14,12 @@ P:4:0:9 [+++++++++_]
 T:2:2:9 [__+++++++_]
 
 Korzystanie z hasWaiters ma powodować zakleszczenie (bardzo
-rzadka sytuacja, ale jest -- trzeba to wymyśleć)
+rzadka sytuacja, ale jest -- trzeba to wymyślić).
 
-Generalnie Jeżeli jest pierwsyz producent, jest on wyrzucowny przez
-monitor przez konsumenta i powiedzmy do akcji wchodiz inny 
-producent który dostaje locka, hasWaiters w tym momencie kłamie (
-co prawda nikt na nim nie czeka, ale wątek pierwszgo producenta jest przed
+Generalnie, jeżeli jest pierwszy producent, jest on wyrzucony przez
+monitor przez konsumenta i powiedzmy, do akcji wchodzi inny 
+producent, który dostaje locka, hasWaiters w tym momencie kłamie (
+co prawda nikt na nim nie czeka, ale wątek pierwszego producenta jest przed
 monitorem -- w efekcie mamy małe zagładzanie). 
 Powiedzmy, że stanie się tak z wszystkimi wątkami
 producentów.

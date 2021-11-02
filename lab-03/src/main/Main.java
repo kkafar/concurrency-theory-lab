@@ -1,11 +1,15 @@
 package main;
 
-import main.labtask2.actors.Consumer;
-import main.labtask2.actors.Producer;
-import main.labtask2.buffer.SynchronizedCyclicBuffer;
+//import main.hometask.fourconds.actors.Consumer;
+//import main.hometask.fourconds.actors.Producer;
+//import main.hometask.fourconds.buffer.SynchronizedCyclicBuffer;
+
+import main.hometask.twoconds.actors.Consumer;
+import main.hometask.twoconds.actors.Producer;
+import main.hometask.twoconds.buffer.SynchronizedCyclicBuffer;
 
 public class Main {
-  private static final int N_PRODUCERS = 2;
+  private static final int N_PRODUCERS = 3;
   private static final int N_CONSUMERS = 3;
   private static final int BUFFER_SIZE = 10;
 
@@ -13,35 +17,30 @@ public class Main {
     Producer[] producers = new Producer[N_PRODUCERS];
     Consumer[] consumers = new Consumer[N_CONSUMERS];
 
-    Thread[] producerThreads = new Thread[N_PRODUCERS];
-    Thread[] consumerThreads = new Thread[N_CONSUMERS];
-
-    SynchronizedCyclicBuffer buffer = new SynchronizedCyclicBuffer(BUFFER_SIZE, true);
+    SynchronizedCyclicBuffer buffer = new SynchronizedCyclicBuffer(BUFFER_SIZE, N_PRODUCERS + N_CONSUMERS, true);
 
     for (int i = 0; i < N_PRODUCERS; ++i) {
-      producers[i] = new Producer(buffer);
-      producerThreads[i] = new Thread(producers[i]);
+      producers[i] = new Producer(buffer, "Producer no " + i, i);
     }
 
     for (int i = 0; i < N_CONSUMERS; ++i) {
-      consumers[i] = new Consumer(buffer);
-      consumerThreads[i] = new Thread(consumers[i]);
+      consumers[i] = new Consumer(buffer, "Consumer no " + i, N_PRODUCERS + i);
     }
 
     for (int i = 0; i < N_PRODUCERS; ++i) {
-      producerThreads[i].start();
+      producers[i].start();
     }
 
     for (int i = 0; i < N_CONSUMERS; ++i) {
-      consumerThreads[i].start();
+      consumers[i].start();
     }
 
     for (int i = 0; i < N_PRODUCERS; ++i) {
-      producerThreads[i].join();
+      producers[i].join();
     }
 
     for (int i = 0; i < N_CONSUMERS; ++i) {
-      consumerThreads[i].join();
+      consumers[i].join();
     }
   }
 
