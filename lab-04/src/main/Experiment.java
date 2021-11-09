@@ -4,59 +4,60 @@ import main.lab.task1.actors.Consumer;
 import main.lab.task1.actors.Producer;
 import main.lab.task1.buffer.Buffer;
 import main.lab.task1.buffer.BufferFactory;
-import main.lab.task1.buffer.SynchronizedCyclicBuffer;
 import main.utils.Timer;
 
 public class Experiment {
-  private final int numberOfConsumers;
-  private final int numberofProducers;
+//  private int numberOfConsumers;
+//  private int numberOfProducers;
   private final int bufferSize;
-  private final long iterations;
+  private long actions;
+
   private final long rngSeed;
 
-  private final Producer[] producers;
-  private final Consumer[] consumers;
+  private Producer[] producers;
+  private Consumer[] consumers;
 
-  private final Buffer buffer;
+  private Buffer buffer;
 
   private final Timer timer;
+  private final BufferFactory bufferFactory;
 
   public Experiment(
       final BufferFactory bufferFactory,
-      final int numberOfConsumers,
-      final int numberOfProducers,
       final int bufferSize,
-      final long iterations,
       final long rngSeed
   ) {
-    this.producers = new Producer[numberOfProducers];
-    this.consumers = new Consumer[numberOfConsumers];
-    this.numberOfConsumers = numberOfConsumers;
-    this.numberofProducers = numberOfProducers;
-    this.bufferSize = bufferSize;
-    this.iterations = iterations;
     this.rngSeed = rngSeed;
-    this.buffer = bufferFactory.create(bufferSize, true);
     this.timer = new Timer();
-
-    initConsumers();
-    initProducers();
+    this.bufferFactory = bufferFactory;
+    this.bufferSize = bufferSize;
   }
 
-  private void initProducers() {
-    for (int i = 0; i < numberofProducers; ++i) {
-      producers[i] = new Producer(buffer, iterations, rngSeed);
+  private void setup(
+      final int numberOfProducers,
+      final int numberOfConsumers
+  ) {
+    producers = new Producer[numberOfProducers];
+    consumers = new Consumer[numberOfConsumers];
+    buffer = bufferFactory.create(bufferSize, actions,false);
+    initProducers(numberOfProducers);
+    initConsumers(numberOfConsumers);
+  }
+
+  private void initProducers(final int numberOfProducers) {
+    for (int i = 0; i < numberOfProducers; ++i) {
+      producers[i] = new Producer(buffer, actions, rngSeed);
     }
   }
 
-  private void initConsumers() {
+  private void initConsumers(final int numberOfConsumers) {
     for (int i = 0; i < numberOfConsumers; ++i) {
-      consumers[i] = new Consumer(buffer, iterations, rngSeed);
+      consumers[i] = new Consumer(buffer, actions, rngSeed);
     }
   }
 
-  private void start() {
-    for (int i = 0; i < numberofProducers; ++i) {
+  private void start(final int numberOfProducers, final int numberOfConsumers) {
+    for (int i = 0; i < numberOfProducers; ++i) {
       producers[i].start();
     }
     for (int i = 0; i < numberOfConsumers; ++i) {
@@ -64,8 +65,8 @@ public class Experiment {
     }
   }
 
-  private void join() throws InterruptedException {
-    for (int i = 0; i < numberofProducers; ++i) {
+  private void join(final int numberOfProducers, final int numberOfConsumers) throws InterruptedException {
+    for (int i = 0; i < numberOfProducers; ++i) {
       producers[i].join();
     }
     for (int i = 0; i < numberOfConsumers; ++i) {
@@ -73,10 +74,22 @@ public class Experiment {
     }
   }
 
-  public ExperimentResult conduct() throws InterruptedException {
-    start();
-    join();
-    return null;
+  public ExperimentResult conduct(
+      final int iterations,
+      final int actions,
+      final int numberOfProducers,
+      final int numberOfConsumers
+  ) throws InterruptedException {
+    ExperimentResult experimentResult = new ExperimentResult(iterations);
+    this.actions = actions;
+    for (int i = 0; i < iterations; ++i) {
+      setup(numberOfProducers, numberOfConsumers);
+      timer.start();
+      start(numberOfProducers, numberOfConsumers);
+      join(numberOfProducers, numberOfConsumers);
+      timer.stop();
+      experimentResult.add(timer.getElapsed());
+    }
+    return experimentResult;
   }
-
 }
