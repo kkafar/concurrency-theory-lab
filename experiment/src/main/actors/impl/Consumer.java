@@ -1,7 +1,6 @@
 package main.actors.impl;
 
-import main.lab.task1.buffer.Buffer;
-
+import main.buffer.interfaces.Buffer;
 import java.util.Random;
 
 
