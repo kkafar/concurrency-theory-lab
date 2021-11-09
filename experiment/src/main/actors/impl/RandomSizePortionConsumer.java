@@ -4,20 +4,20 @@ import main.buffer.interfaces.Buffer;
 import java.util.Random;
 
 
-public class Consumer extends Thread {
+public class RandomSizePortionConsumer extends Thread {
   private final Buffer buffer;
   private final Random rng;
   private final long iterations;
   private long executedTasks;
 
-  public Consumer(Buffer buffer, final long iterations, final long rngSeed) {
+  public RandomSizePortionConsumer(Buffer buffer, final long iterations, final long rngSeed) {
     this.buffer = buffer;
     this.rng = new Random(rngSeed);
     this.iterations = iterations;
     this.executedTasks = 0;
   }
 
-  public Consumer(Buffer buffer) {
+  public RandomSizePortionConsumer(Buffer buffer) {
     this(buffer, 100, 1);
   }
 

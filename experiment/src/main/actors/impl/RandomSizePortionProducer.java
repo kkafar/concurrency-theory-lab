@@ -1,20 +1,25 @@
 package main.actors.impl;
 
+import main.actors.interfaces.Producer;
 import main.buffer.interfaces.Buffer;
 import java.util.Arrays;
 import java.util.Random;
 
-public class Producer extends Thread {
+public class RandomSizePortionProducer extends Thread implements Producer {
   private final Buffer buffer;
   private final Random rng;
   private final long iterations;
   private long executedTasks;
 
-  public Producer(Buffer buffer, final long iterations, final long rngSeed) {
+  public RandomSizePortionProducer(Buffer buffer, final long iterations, final long rngSeed) {
     this.buffer = buffer;
     this.rng = new Random(rngSeed);
     this.iterations = iterations;
     this.executedTasks = 0;
+  }
+
+  public void put() {
+
   }
 
   public void run() {
