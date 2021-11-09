@@ -3,7 +3,7 @@ package main.lab.task1.buffer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SynchronizedCyclicBuffer {
+public class SynchronizedCyclicBuffer implements Buffer {
   private final ReentrantLock sharedLock = new ReentrantLock();
   private final ReentrantLock consumersLock = new ReentrantLock();
   private final ReentrantLock producersLock = new ReentrantLock();
@@ -57,5 +57,4 @@ public class SynchronizedCyclicBuffer {
     }
     return null;
   }
-
 }

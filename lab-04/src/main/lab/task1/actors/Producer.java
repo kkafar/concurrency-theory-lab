@@ -1,29 +1,29 @@
 package main.lab.task1.actors;
 
-import main.lab.task1.buffer.SynchronizedCyclicBuffer;
-import main.utils.Random;
-
+import main.lab.task1.buffer.Buffer;
+import java.util.Random;
 import java.util.Arrays;
 
 public class Producer extends Thread {
-  private final SynchronizedCyclicBuffer buffer;
+  private final Buffer buffer;
+  private final Random rng;
+  private final long iterations;
 
-  public Producer(SynchronizedCyclicBuffer buffer) {
+  public Producer(Buffer buffer, final long iterations, final long rngSeed) {
     this.buffer = buffer;
+    this.rng = new Random(rngSeed);
+    this.iterations = iterations;
   }
 
   public void run() {
-    int n;
     int halfBufferSize = buffer.getSize() / 2;
-    Object[] input;
     try {
-      while (true) {
-        n = Random.getRandomIntInRange(1, halfBufferSize);
+      rng.ints(iterations, 1, halfBufferSize).forEach(n -> {
         if (n >= halfBufferSize) --n;
-        input = new Object[n];
-        Arrays.fill(input, new Object());
+        Object[] input = new Object[n];
+        Arrays.fill(input, new Object());;
         buffer.put(input);
-      }
+      });
     } catch (Exception exception) {
       exception.printStackTrace();
     }

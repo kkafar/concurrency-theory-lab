@@ -1,30 +1,31 @@
 package main.lab.task1.actors;
 
-import main.lab.task1.buffer.SynchronizedCyclicBuffer;
-import main.utils.Random;
+import main.lab.task1.buffer.Buffer;
+import java.util.Random;
+
 
 public class Consumer extends Thread {
-  private final SynchronizedCyclicBuffer buffer;
-  private final int cycles;
+  private final Buffer buffer;
+  private final Random rng;
+  private final long iterations;
 
-  public Consumer(SynchronizedCyclicBuffer buffer, final int cycles) {
+  public Consumer(Buffer buffer, final long iterations, final long rngSeed) {
     this.buffer = buffer;
-    this.cycles = cycles;
+    this.rng = new Random(rngSeed);
+    this.iterations = iterations;
   }
 
-  public Consumer(SynchronizedCyclicBuffer buffer) {
-    this(buffer, -1);
+  public Consumer(Buffer buffer) {
+    this(buffer, 100, 1);
   }
 
   public void run() {
-    int n;
     int halfBufferSize = buffer.getSize() / 2;
     try {
-      while (true) { // TODO: Iterate this.cycles times
-        n = Random.getRandomIntInRange(1, halfBufferSize);
+      this.rng.ints(iterations, 1, halfBufferSize).forEach(n -> {
         if (n >= halfBufferSize) --n;
         buffer.take(n);
-      }
+      });
     } catch (Exception exception) {
       exception.printStackTrace();
     }
