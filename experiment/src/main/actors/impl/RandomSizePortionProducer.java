@@ -5,43 +5,30 @@ import main.buffer.interfaces.Buffer;
 import java.util.Arrays;
 import java.util.Random;
 
-public class RandomSizePortionProducer extends Thread implements Producer {
+public class RandomSizePortionProducer extends Producer {
   private final Buffer buffer;
   private final Random rng;
-  private final long iterations;
-  private long executedTasks;
+  private final int maxPortionSize;
+  private final int minPortionSize;
 
-  public RandomSizePortionProducer(Buffer buffer, final long iterations, final long rngSeed) {
+  public RandomSizePortionProducer(Buffer buffer, final long rngSeed) {
     this.buffer = buffer;
     this.rng = new Random(rngSeed);
-    this.iterations = iterations;
-    this.executedTasks = 0;
-  }
-
-  public void put() {
-
+    this.maxPortionSize = buffer.getSize() / 2;
+    this.minPortionSize = 1;
   }
 
   public void run() {
-    int halfBufferSize = buffer.getSize() / 2;
-    try {
-      rng.ints(iterations,1, halfBufferSize).forEach(n -> {
-        if (n >= halfBufferSize) --n;
-        Object[] input = new Object[n];
-        Arrays.fill(input, new Object());;
-        buffer.put(input);
-        ++executedTasks;
-      });
-    } catch (Exception exception) {
-      exception.printStackTrace();
-    }
+    rng.ints(minPortionSize, maxPortionSize).forEach(n -> {
+      Object[] input = new Object[n];
+      Arrays.fill(input, new Object());;
+      put(input);
+    });
   }
 
-  public long getExecutedTasks() {
-    return executedTasks;
-  }
-
-  public void deactivate() {
-    this.interrupt();
+  @Override
+  public void put(Object[] objects) {
+    buffer.put(objects);
+    ++executedTasks;
   }
 }

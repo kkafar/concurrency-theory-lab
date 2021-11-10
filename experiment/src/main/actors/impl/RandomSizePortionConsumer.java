@@ -1,48 +1,36 @@
 package main.actors.impl;
 
+import main.actors.interfaces.Consumer;
 import main.buffer.interfaces.Buffer;
 import java.util.Random;
 
 
-public class RandomSizePortionConsumer extends Thread {
+public class RandomSizePortionConsumer extends Consumer {
   private final Buffer buffer;
   private final Random rng;
-  private final long iterations;
-  private long executedTasks;
+  private final int maxPortionSize;
+  private final int minPortionSize;
 
-  public RandomSizePortionConsumer(Buffer buffer, final long iterations, final long rngSeed) {
+  public RandomSizePortionConsumer(Buffer buffer, final long rngSeed) {
     this.buffer = buffer;
     this.rng = new Random(rngSeed);
-    this.iterations = iterations;
     this.executedTasks = 0;
-  }
-
-  public RandomSizePortionConsumer(Buffer buffer) {
-    this(buffer, 100, 1);
+    this.maxPortionSize = buffer.getSize() / 2;
+    this.minPortionSize = 1;
   }
 
   public void run() {
-    int halfBufferSize = buffer.getSize() / 2;
+    this.rng.ints(minPortionSize, maxPortionSize).forEach(this::take);
+  }
+
+  @Override
+  public void take(int n) {
     try {
-      this.rng.ints(iterations,1, halfBufferSize).forEach(n -> {
-        if (n >= halfBufferSize) --n;
-        try {
-          buffer.take(n);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-        ++executedTasks;
-      });
-    } catch (Exception exception) {
+      buffer.take(n);
+    } catch (InterruptedException exception) {
       exception.printStackTrace();
+    } finally {
+      ++executedTasks;
     }
-  }
-
-  public long getExecutedTasks() {
-    return executedTasks;
-  }
-
-  public void deactivate() {
-    this.interrupt();
   }
 }
