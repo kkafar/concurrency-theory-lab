@@ -3,8 +3,8 @@ package main;
 import main.actors.impl.RandomSizePortionConsumer;
 import main.actors.impl.RandomSizePortionProducer;
 import main.buffer.impl.SyncThreeLocksBuffer;
-import main.experiment.Experiment;
-import main.experiment.ExperimentResult;
+import main.experiment.task.Task;
+import main.experiment.task.TaskResult;
 
 public class Main {
   private static final int N_PRODUCERS = 3;
@@ -16,7 +16,7 @@ public class Main {
   private static final int RNG_SEED = 10;
 
   public static void main(String[] args) throws InterruptedException {
-    Experiment experimentThreeLocks = new Experiment(
+    Task taskThreeLocks = new Task(
         "Solution with three locks",
         RandomSizePortionProducer::new,
         RandomSizePortionConsumer::new,
@@ -30,8 +30,8 @@ public class Main {
     ).setBufferLog(
         true
     );
-    experimentThreeLocks.conduct();
+    taskThreeLocks.conduct();
 
-    ExperimentResult experimentThreeLocksResult = experimentThreeLocks.getExperimentResult();
+    TaskResult experimentThreeLocksResult = taskThreeLocks.getTaskResult();
   }
 }
