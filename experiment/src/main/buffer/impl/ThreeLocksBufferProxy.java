@@ -5,7 +5,7 @@ import main.buffer.interfaces.Buffer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SyncThreeLocksBuffer implements Buffer {
+public class ThreeLocksBufferProxy implements Buffer {
   private final ReentrantLock sharedLock = new ReentrantLock();
   private final ReentrantLock consumersLock = new ReentrantLock();
   private final ReentrantLock producersLock = new ReentrantLock();
@@ -15,7 +15,7 @@ public class SyncThreeLocksBuffer implements Buffer {
 
   private final CyclicBuffer buffer;
 
-  public SyncThreeLocksBuffer(final int size, final long actions, boolean log) {
+  public ThreeLocksBufferProxy(final int size, final long actions, boolean log) {
     this.buffer = new CyclicBuffer(size, log);
     this.maxActions = actions;
     this.actions = 0;

@@ -5,7 +5,7 @@ import main.buffer.interfaces.Buffer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SyncFourCondsBuffer implements Buffer {
+public class FourCondsBufferProxy implements Buffer {
   private final ReentrantLock lock = new ReentrantLock();
   private final Condition producers = lock.newCondition();
   private final Condition consumers = lock.newCondition();
@@ -20,7 +20,7 @@ public class SyncFourCondsBuffer implements Buffer {
   private final long maxActions;
   private long actions;
 
-  public SyncFourCondsBuffer(final int size, final long actions, boolean log) {
+  public FourCondsBufferProxy(final int size, final long actions, boolean log) {
     buffer = new CyclicBuffer(size, log);
     maxActions = actions;
     this.actions = 0;
