@@ -1,4 +1,4 @@
-package main.experiment.task;
+package main.experiment.task.impl;
 
 import main.actors.interfaces.ConsumerFactory;
 import main.actors.interfaces.ProducerFactory;
@@ -8,7 +8,7 @@ import main.actors.interfaces.Producer;
 import main.buffer.interfaces.Buffer;
 import main.utils.Timer;
 
-public class Task {
+public class TaskImpl {
   private long actions = 0;
   private int bufferSize = 0;
   private int numberOfProducers = 0;
@@ -21,7 +21,7 @@ public class Task {
   private Consumer[] consumers;
 
   private Buffer buffer;
-  private TaskResult taskResult;
+  private TaskResultImpl taskResult;
 
   private final long rngSeed;
   private final String description;
@@ -31,7 +31,7 @@ public class Task {
   private final ProducerFactory producerFactory;
   private final ConsumerFactory consumerFactory;
 
-  public Task(
+  public TaskImpl(
       final String description,
       final ProducerFactory producerFactory,
       final ConsumerFactory consumerFactory,
@@ -46,7 +46,7 @@ public class Task {
     this.description = description;
   }
 
-  public Task configure(
+  public TaskImpl configure(
       final int numberOfProducers,
       final int numberOfConsumers,
       final int repeats,
@@ -63,7 +63,7 @@ public class Task {
     return this;
   }
 
-  public Task setBufferLog(final boolean flag) {
+  public TaskImpl setBufferLog(final boolean flag) {
     bufferLog = flag;
     return this;
   }
@@ -106,16 +106,16 @@ public class Task {
     }
   }
 
-  public TaskResult getTaskResult() {
+  public TaskResultImpl getTaskResult() {
     return taskResult;
   }
 
-  public TaskResult conduct(
+  public TaskResultImpl conduct(
   ) throws InterruptedException {
     if (!isConfigured) {
-      throw new IllegalStateException("Task must be configured before being started.");
+      throw new IllegalStateException("TaskImpl must be configured before being started.");
     }
-    taskResult = new TaskResult(repeats);
+    taskResult = new TaskResultImpl(repeats);
     for (int i = 0; i < repeats; ++i) {
       setup();
       timer.start();

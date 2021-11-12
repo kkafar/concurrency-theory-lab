@@ -1,8 +1,8 @@
-package main.experiment.task;
+package main.experiment.task.impl;
 
 import java.util.Arrays;
 
-public class TaskResult {
+public class TaskResultImpl {
   private int durationsInMsIndex;
   private int producersIndex;
   private int consumersIndex;
@@ -10,7 +10,7 @@ public class TaskResult {
   private final long[] tasksExecutedByProducers;
   private final long[] tasksExecutedByConsumers;
 
-  public TaskResult(final int entries) {
+  public TaskResultImpl(final int entries) {
     durationsInMs = new long[entries];
     tasksExecutedByProducers = new long[entries];
     tasksExecutedByConsumers = new long[entries];
