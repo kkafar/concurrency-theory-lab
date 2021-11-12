@@ -30,6 +30,10 @@ public class SyncFourCondsBuffer implements Buffer {
     return buffer.getSize();
   }
 
+  public void setLog(final boolean log) {
+    this.buffer.setLog(log);
+  }
+
   public void put(final Object[] objects) {
     lock.lock();
     try {

@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class CyclicBuffer implements Buffer {
   private final int size;
   private final Object[] buffer;
-  private final boolean log;
+  private boolean log;
 
   private int firstEmptyIndex = 0;
   private int firstOccupiedIndex = 0;
@@ -59,6 +59,10 @@ public class CyclicBuffer implements Buffer {
 
   public boolean canTake(final int n) {
     return occupiedCount >= n;
+  }
+
+  public void setLog(final boolean log) {
+    this.log = log;
   }
 
   @Override

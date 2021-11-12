@@ -6,4 +6,6 @@ public interface Buffer {
   Object[] take(final int n) throws InterruptedException;
 
   int getSize();
+
+  void setLog(final boolean log);
 }

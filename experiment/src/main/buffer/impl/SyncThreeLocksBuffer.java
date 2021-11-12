@@ -16,13 +16,17 @@ public class SyncThreeLocksBuffer implements Buffer {
   private final CyclicBuffer buffer;
 
   public SyncThreeLocksBuffer(final int size, final long actions, boolean log) {
-    buffer = new CyclicBuffer(size, log);
-    maxActions = actions;
+    this.buffer = new CyclicBuffer(size, log);
+    this.maxActions = actions;
     this.actions = 0;
   }
 
   public int getSize() {
     return buffer.getSize();
+  }
+
+  public void setLog(final boolean log) {
+    this.buffer.setLog(log);
   }
 
   public void put(final Object[] objects) {
