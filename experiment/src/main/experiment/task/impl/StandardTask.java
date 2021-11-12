@@ -6,9 +6,11 @@ import main.buffer.interfaces.BufferFactory;
 import main.actors.interfaces.Consumer;
 import main.actors.interfaces.Producer;
 import main.buffer.interfaces.Buffer;
+import main.experiment.task.interfaces.Task;
+import main.experiment.task.interfaces.TaskResult;
 import main.utils.Timer;
 
-public class TaskImpl {
+public class StandardTask implements Task {
   private long actions = 0;
   private int bufferSize = 0;
   private int numberOfProducers = 0;
@@ -21,9 +23,9 @@ public class TaskImpl {
   private Consumer[] consumers;
 
   private Buffer buffer;
-  private TaskResultImpl taskResult;
+  private StandardTaskResult taskResult;
 
-  private final long rngSeed;
+  private final long initialRngSeed;
   private final String description;
 
   private final Timer timer;
@@ -31,14 +33,16 @@ public class TaskImpl {
   private final ProducerFactory producerFactory;
   private final ConsumerFactory consumerFactory;
 
-  public TaskImpl(
+  public StandardTask(
       final String description,
+      final int numberOfProducers,
+      final int numberOfConsumers,
       final ProducerFactory producerFactory,
       final ConsumerFactory consumerFactory,
       final BufferFactory bufferFactory,
-      final long rngSeed
+      final long startingRngSeed
   ) {
-    this.rngSeed = rngSeed;
+    this.initialRngSeed = startingRngSeed;
     this.timer = new Timer();
     this.bufferFactory = bufferFactory;
     this.producerFactory = producerFactory;
@@ -46,7 +50,7 @@ public class TaskImpl {
     this.description = description;
   }
 
-  public TaskImpl configure(
+  public StandardTask configure(
       final int numberOfProducers,
       final int numberOfConsumers,
       final int repeats,
@@ -63,7 +67,7 @@ public class TaskImpl {
     return this;
   }
 
-  public TaskImpl setBufferLog(final boolean flag) {
+  public StandardTask setBufferLog(final boolean flag) {
     bufferLog = flag;
     return this;
   }
@@ -78,13 +82,13 @@ public class TaskImpl {
 
   private void initProducers() {
     for (int i = 0; i < numberOfProducers; ++i) {
-      producers[i] = producerFactory.create(buffer, rngSeed);
+      producers[i] = producerFactory.create(buffer, initialRngSeed);
     }
   }
 
   private void initConsumers() {
     for (int i = 0; i < numberOfConsumers; ++i) {
-      consumers[i] = consumerFactory.create(buffer, rngSeed);
+      consumers[i] = consumerFactory.create(buffer, initialRngSeed);
     }
   }
 
@@ -97,6 +101,11 @@ public class TaskImpl {
     }
   }
 
+  @Override
+  public TaskResult getResult() {
+    return null;
+  }
+
   private void join() throws InterruptedException {
     for (int i = 0; i < numberOfProducers; ++i) {
       producers[i].join();
@@ -106,16 +115,12 @@ public class TaskImpl {
     }
   }
 
-  public TaskResultImpl getTaskResult() {
+  public StandardTaskResult getTaskResult() {
     return taskResult;
   }
 
-  public TaskResultImpl conduct(
-  ) throws InterruptedException {
-    if (!isConfigured) {
-      throw new IllegalStateException("TaskImpl must be configured before being started.");
-    }
-    taskResult = new TaskResultImpl(repeats);
+  public void run() {
+    taskResult = new StandardTaskResult(repeats);
     for (int i = 0; i < repeats; ++i) {
       setup();
       timer.start();
@@ -124,6 +129,5 @@ public class TaskImpl {
       timer.stop();
       taskResult.addTaskDuration(timer.getElapsed());
     }
-    return taskResult;
   }
 }
