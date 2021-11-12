@@ -10,6 +10,7 @@ public interface TaskFactory {
       final int numberOfConsumers,
       final ProducerFactory producerFactory,
       final ConsumerFactory consumerFactory,
-      final long initialRngSeed
+      final long initialRngSeed,
+      final int repeats
   );
 }

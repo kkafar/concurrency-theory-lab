@@ -17,7 +17,6 @@ public class StandardTask implements Task {
   private int numberOfConsumers = 0;
   private int repeats = 0;
   private boolean bufferLog = false;
-  private boolean isConfigured = false;
 
   private Producer[] producers;
   private Consumer[] consumers;
@@ -40,7 +39,8 @@ public class StandardTask implements Task {
       final ProducerFactory producerFactory,
       final ConsumerFactory consumerFactory,
       final BufferFactory bufferFactory,
-      final long startingRngSeed
+      final long startingRngSeed,
+      final int repeats
   ) {
     this.initialRngSeed = startingRngSeed;
     this.timer = new Timer();
@@ -48,28 +48,13 @@ public class StandardTask implements Task {
     this.producerFactory = producerFactory;
     this.consumerFactory = consumerFactory;
     this.description = description;
-  }
-
-  public StandardTask configure(
-      final int numberOfProducers,
-      final int numberOfConsumers,
-      final int repeats,
-      final int bufferSize
-  ) {
-    this.numberOfProducers = numberOfProducers;
     this.numberOfConsumers = numberOfConsumers;
+    this.numberOfProducers = numberOfProducers;
     this.repeats = repeats;
-    this.bufferSize = bufferSize;
-
-    setup();
-
-    this.isConfigured = true;
-    return this;
   }
 
   public StandardTask setBufferLog(final boolean flag) {
     bufferLog = flag;
-    return this;
   }
 
   private void setup() {
@@ -119,7 +104,7 @@ public class StandardTask implements Task {
     return taskResult;
   }
 
-  public void run() {
+  public void run() throws InterruptedException {
     taskResult = new StandardTaskResult(repeats);
     for (int i = 0; i < repeats; ++i) {
       setup();
