@@ -43,8 +43,7 @@ public class FourCondsBufferProxy implements Buffer {
       while (firstProducerAwaiting) {
         producers.await();
         if (completedOperations >= maxOperations) {
-          Actor thisThread = (Actor) Thread.currentThread();
-          thisThread.deactivate();
+          ((Actor) Thread.currentThread()).deactivate();
           signalAllActors();
           return;
         }
@@ -53,8 +52,7 @@ public class FourCondsBufferProxy implements Buffer {
         firstProducerAwaiting = true;
         firstProducer.await();
         if (completedOperations >= maxOperations) {
-          Actor thisThread = (Actor) Thread.currentThread();
-          thisThread.deactivate();
+          ((Actor) Thread.currentThread()).deactivate();
           signalAllActors();
           return;
         }
@@ -64,10 +62,8 @@ public class FourCondsBufferProxy implements Buffer {
       buffer.put(objects);
       ++completedOperations;
       if (completedOperations >= maxOperations) {
-        Actor thisThread = (Actor) Thread.currentThread();
-        thisThread.deactivate();
+        ((Actor) Thread.currentThread()).deactivate();
         signalAllActors();
-        return;
       }
     } catch (IllegalMonitorStateException | InterruptedException exception) {
       exception.printStackTrace();
@@ -87,8 +83,7 @@ public class FourCondsBufferProxy implements Buffer {
       while (firstConsumerAwaiting) {
         consumers.await();
         if (completedOperations >= maxOperations) {
-          Actor thisThread = (Actor) Thread.currentThread();
-          thisThread.deactivate();
+          ((Actor) Thread.currentThread()).deactivate();
           signalAllActors();
           return null;
         }
@@ -97,21 +92,19 @@ public class FourCondsBufferProxy implements Buffer {
         firstConsumerAwaiting = true;
         firstConsumer.await();
         if (completedOperations >= maxOperations) {
-          Actor thisThread = (Actor) Thread.currentThread();
-          thisThread.deactivate();
+          ((Actor) Thread.currentThread()).deactivate();
           signalAllActors();
           return null;
         }
         firstConsumerAwaiting = false;
       }
-
+      ++completedOperations;
       return buffer.take(n);
     } catch (IllegalMonitorStateException | InterruptedException exception) {
       exception.printStackTrace();
     } finally {
       if (completedOperations >= maxOperations) {
-        Actor thisThread = (Actor) Thread.currentThread();
-        thisThread.deactivate();
+        ((Actor) Thread.currentThread()).deactivate();
         signalAllActors();
       }
       if (firstProducerAwaiting) {
