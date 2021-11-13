@@ -1,4 +1,4 @@
-package main.experiment.task;
+package main.experiment;
 
 import main.experiment.task.interfaces.TaskResult;
 
