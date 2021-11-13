@@ -2,6 +2,7 @@ package main.experiment.task.interfaces;
 
 import main.actors.interfaces.ConsumerFactory;
 import main.actors.interfaces.ProducerFactory;
+import main.buffer.interfaces.BufferFactory;
 
 public interface TaskFactory {
   Task create(
@@ -10,7 +11,10 @@ public interface TaskFactory {
       final int numberOfConsumers,
       final ProducerFactory producerFactory,
       final ConsumerFactory consumerFactory,
-      final long initialRngSeed,
+      final BufferFactory bufferFactory,
+      final int bufferSize,
+      final long bufferOperationsBound,
+      final long startingRngSeed,
       final int repeats
   );
 }

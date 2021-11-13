@@ -4,7 +4,7 @@ import main.experiment.task.interfaces.TaskResult;
 
 import java.util.Arrays;
 
-public class StandardTaskResult implements TaskResult {
+public class StandardTaskResult extends TaskResult {
   private int durationsInMsIndex;
   private int producersIndex;
   private int consumersIndex;

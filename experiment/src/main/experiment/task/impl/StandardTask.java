@@ -11,12 +11,11 @@ import main.experiment.task.interfaces.TaskResult;
 import main.utils.Timer;
 
 public class StandardTask implements Task {
-  private long actions = 0;
-  private int bufferSize = 0;
-  private int numberOfProducers = 0;
-  private int numberOfConsumers = 0;
-  private int repeats = 0;
-  private boolean bufferLog = false;
+  private final long bufferOperationsBound;
+  private final int bufferSize;
+  private final int numberOfProducers;
+  private final int numberOfConsumers;
+  private final int repeats;
 
   private Producer[] producers;
   private Consumer[] consumers;
@@ -39,6 +38,8 @@ public class StandardTask implements Task {
       final ProducerFactory producerFactory,
       final ConsumerFactory consumerFactory,
       final BufferFactory bufferFactory,
+      final int bufferSize,
+      final long bufferOperationsBound,
       final long startingRngSeed,
       final int repeats
   ) {
@@ -51,16 +52,20 @@ public class StandardTask implements Task {
     this.numberOfConsumers = numberOfConsumers;
     this.numberOfProducers = numberOfProducers;
     this.repeats = repeats;
+    this.bufferSize = bufferSize;
+    this.bufferOperationsBound = bufferOperationsBound;
+    this.taskResult = new StandardTaskResult(repeats);
+    setup();
   }
 
-  public StandardTask setBufferLog(final boolean flag) {
-    bufferLog = flag;
+  public void setLog(final boolean flag) {
+    this.buffer.setLog(flag);
   }
 
   private void setup() {
     producers = new Producer[numberOfProducers];
     consumers = new Consumer[numberOfConsumers];
-    buffer = bufferFactory.create(bufferSize, actions, bufferLog);
+    buffer = bufferFactory.create(bufferSize, bufferOperationsBound, false);
     initProducers();
     initConsumers();
   }
@@ -88,7 +93,7 @@ public class StandardTask implements Task {
 
   @Override
   public TaskResult getResult() {
-    return null;
+    return taskResult;
   }
 
   private void join() throws InterruptedException {
@@ -100,19 +105,25 @@ public class StandardTask implements Task {
     }
   }
 
+  private void extractResult(StandardTaskResult result) {
+    taskResult.addTaskDuration(timer.getElapsed());
+
+    for (Producer producer : producers) {
+
+    }
+  }
+
   public StandardTaskResult getTaskResult() {
     return taskResult;
   }
 
   public void run() throws InterruptedException {
-    taskResult = new StandardTaskResult(repeats);
     for (int i = 0; i < repeats; ++i) {
-      setup();
+//      setup();
       timer.start();
       start();
       join();
       timer.stop();
-      taskResult.addTaskDuration(timer.getElapsed());
     }
   }
 }
