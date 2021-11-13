@@ -10,6 +10,7 @@ public class ThreeLocksBufferProxy implements Buffer {
   private final ReentrantLock consumersLock = new ReentrantLock();
   private final ReentrantLock producersLock = new ReentrantLock();
   private final Condition sharedCondition = sharedLock.newCondition();
+  
   private final long maxActions;
   private long actions;
 

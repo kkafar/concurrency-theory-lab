@@ -1,5 +1,6 @@
 package main.buffer.impl;
 
+import main.actors.interfaces.Actor;
 import main.buffer.interfaces.Buffer;
 
 import java.util.concurrent.locks.Condition;
@@ -17,13 +18,15 @@ public class FourCondsBufferProxy implements Buffer {
   private boolean firstProducerAwaiting = false;
   private boolean firstConsumerAwaiting = false;
 
-  private final long maxActions;
-  private long actions;
+  private final long maxOperations;
+  private long completedOperations;
 
-  public FourCondsBufferProxy(final int size, final long actions, boolean log) {
+  private boolean actorsSignalled = false;
+
+  public FourCondsBufferProxy(final int size, final long maxOperations, boolean log) {
     buffer = new CyclicBuffer(size, log);
-    maxActions = actions;
-    this.actions = 0;
+    this.maxOperations = maxOperations;
+    this.completedOperations = 0;
   }
 
   public int getSize() {
@@ -39,14 +42,33 @@ public class FourCondsBufferProxy implements Buffer {
     try {
       while (firstProducerAwaiting) {
         producers.await();
+        if (completedOperations >= maxOperations) {
+          Actor thisThread = (Actor) Thread.currentThread();
+          thisThread.deactivate();
+          signalAllActors();
+          return;
+        }
       }
       while (!buffer.canPut(objects.length)) {
         firstProducerAwaiting = true;
         firstProducer.await();
+        if (completedOperations >= maxOperations) {
+          Actor thisThread = (Actor) Thread.currentThread();
+          thisThread.deactivate();
+          signalAllActors();
+          return;
+        }
         firstProducerAwaiting = false;
       }
 
       buffer.put(objects);
+      ++completedOperations;
+      if (completedOperations >= maxOperations) {
+        Actor thisThread = (Actor) Thread.currentThread();
+        thisThread.deactivate();
+        signalAllActors();
+        return;
+      }
     } catch (IllegalMonitorStateException | InterruptedException exception) {
       exception.printStackTrace();
     } finally {
@@ -64,10 +86,22 @@ public class FourCondsBufferProxy implements Buffer {
     try {
       while (firstConsumerAwaiting) {
         consumers.await();
+        if (completedOperations >= maxOperations) {
+          Actor thisThread = (Actor) Thread.currentThread();
+          thisThread.deactivate();
+          signalAllActors();
+          return null;
+        }
       }
       while (!buffer.canTake(n)) {
         firstConsumerAwaiting = true;
         firstConsumer.await();
+        if (completedOperations >= maxOperations) {
+          Actor thisThread = (Actor) Thread.currentThread();
+          thisThread.deactivate();
+          signalAllActors();
+          return null;
+        }
         firstConsumerAwaiting = false;
       }
 
@@ -75,6 +109,11 @@ public class FourCondsBufferProxy implements Buffer {
     } catch (IllegalMonitorStateException | InterruptedException exception) {
       exception.printStackTrace();
     } finally {
+      if (completedOperations >= maxOperations) {
+        Actor thisThread = (Actor) Thread.currentThread();
+        thisThread.deactivate();
+        signalAllActors();
+      }
       if (firstProducerAwaiting) {
         firstProducer.signal();
       } else {
@@ -83,5 +122,16 @@ public class FourCondsBufferProxy implements Buffer {
       lock.unlock();
     }
     return null;
+  }
+
+  private void signalAllActors() {
+    if (!actorsSignalled) {
+      System.out.println("Signalled all actors");
+      actorsSignalled = true;
+      firstConsumer.signal();
+      firstProducer.signal();
+      producers.signalAll();
+      consumers.signalAll();
+    }
   }
 }
