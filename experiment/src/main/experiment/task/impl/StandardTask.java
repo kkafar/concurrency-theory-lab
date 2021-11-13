@@ -55,7 +55,9 @@ public class StandardTask implements Task {
     this.bufferSize = bufferSize;
     this.bufferOperationsBound = bufferOperationsBound;
     this.taskResult = new StandardTaskResult(repeats);
-    setup();
+
+    // setup is called in start() method
+//    setup();
   }
 
   public void setLog(final boolean flag) {
@@ -119,7 +121,7 @@ public class StandardTask implements Task {
 
   public void run() throws InterruptedException {
     for (int i = 0; i < repeats; ++i) {
-//      setup();
+      setup();
       timer.start();
       start();
       join();
