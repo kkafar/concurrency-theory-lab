@@ -10,19 +10,8 @@ public class RandomSizePortionProducer extends Producer {
     super(buffer, initialRngSeed);
   }
 
-  public void run() {
-    this.active = true;
-    while (active) {
-      Object[] input = new Object[getNextPortionSize()];
-      Arrays.fill(input, new Object());
-      put(input);
-    }
-  }
-
-
   @Override
-  public void put(Object[] objects) {
-    buffer.put(objects);
-    if (active) ++completedOperations;
+  protected int getNextPortionSize() {
+    return rng.nextInt(maxPortionSize - minPortionSize + 1) + minPortionSize;
   }
 }

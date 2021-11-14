@@ -8,20 +8,8 @@ public class RandomSizePortionConsumer extends Consumer {
     super(buffer, initialRngSeed);
   }
 
-  public void run() {
-    this.active = true;
-    while (active) {
-      take(getNextPortionSize());
-    }
-  }
-
   @Override
-  public void take(int n) {
-    try {
-      buffer.take(n);
-      if (active) ++completedOperations;
-    } catch (InterruptedException exception) {
-      exception.printStackTrace();
-    }
+  protected int getNextPortionSize() {
+    return rng.nextInt(maxPortionSize - minPortionSize + 1) + minPortionSize;
   }
 }
