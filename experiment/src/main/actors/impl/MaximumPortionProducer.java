@@ -3,7 +3,7 @@ package main.actors.impl;
 import main.actors.interfaces.Producer;
 import main.buffer.interfaces.Buffer;
 
-public class MaximumPortionProducer extends Producer {
+public final class MaximumPortionProducer extends Producer {
   public MaximumPortionProducer(Buffer buffer, long initialRngSeed) {
     super(buffer, initialRngSeed);
   }
