@@ -3,9 +3,7 @@ package main.actors.impl;
 import main.actors.interfaces.Producer;
 import main.buffer.interfaces.Buffer;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Random;
 
 public class RandomSizePortionProducer extends Producer {
   public RandomSizePortionProducer(Buffer buffer, final long initialRngSeed) {
@@ -15,7 +13,7 @@ public class RandomSizePortionProducer extends Producer {
   public void run() {
     this.active = true;
     while (active) {
-      Object[] input = new Object[getNextInt()];
+      Object[] input = new Object[getNextPortionSize()];
       Arrays.fill(input, new Object());
       put(input);
     }

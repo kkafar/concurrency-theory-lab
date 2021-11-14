@@ -11,7 +11,7 @@ public class RandomSizePortionConsumer extends Consumer {
   public void run() {
     this.active = true;
     while (active) {
-      take(getNextInt());
+      take(getNextPortionSize());
     }
   }
 

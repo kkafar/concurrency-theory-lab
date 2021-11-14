@@ -32,7 +32,7 @@ abstract public class Actor extends Thread {
     active = false;
   }
 
-  protected int getNextInt() {
+  protected int getNextPortionSize() {
     return rng.nextInt(maxPortionSize - minPortionSize + 1) + minPortionSize;
   }
 }
