@@ -10,6 +10,6 @@ public class MinimalPortionProducer extends Consumer {
 
   @Override
   protected int getNextPortionSize() {
-    return 1;
+    return minPortionSize;
   }
 }
