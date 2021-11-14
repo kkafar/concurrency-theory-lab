@@ -5,8 +5,8 @@ import main.buffer.interfaces.Buffer;
 
 import java.util.Arrays;
 
-public class RandomSizePortionProducer extends Producer {
-  public RandomSizePortionProducer(Buffer buffer, final long initialRngSeed) {
+public class RandomPortionProducer extends Producer {
+  public RandomPortionProducer(Buffer buffer, final long initialRngSeed) {
     super(buffer, initialRngSeed);
   }
 

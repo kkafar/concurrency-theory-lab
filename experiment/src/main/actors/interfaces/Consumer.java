@@ -7,5 +7,19 @@ abstract public class Consumer extends Actor {
     super(buffer, initialRngSeed);
   }
 
-  abstract public void take(final int n) throws InterruptedException;
+  public void run() {
+      this.active = true;
+      while (active) {
+        take(getNextPortionSize());
+      }
+  }
+
+  public void take(final int n) {
+    try {
+      buffer.take(n);
+      if (active) ++completedOperations;
+    } catch (InterruptedException exception) {
+      exception.printStackTrace();
+    }
+  }
 }
