@@ -22,6 +22,7 @@ public class StandardTask implements Task {
 
   private Buffer buffer;
   private StandardTaskResult taskResult;
+  private boolean log = false;
 
   private final long initialRngSeed;
   private final String description;
@@ -60,8 +61,8 @@ public class StandardTask implements Task {
 //    setup();
   }
 
-  public void setLog(final boolean flag) {
-    this.buffer.setLog(flag);
+  public void setLog(final boolean log) {
+    this.log = log;
   }
 
   private void setup() {
@@ -70,17 +71,20 @@ public class StandardTask implements Task {
     buffer = bufferFactory.create(bufferSize, bufferOperationsBound, false);
     initProducers();
     initConsumers();
+    buffer.setLog(log);
   }
 
   private void initProducers() {
     for (int i = 0; i < numberOfProducers; ++i) {
       producers[i] = producerFactory.create(buffer, initialRngSeed);
+      producers[i].setName("PRODUCER " + i);
     }
   }
 
   private void initConsumers() {
     for (int i = 0; i < numberOfConsumers; ++i) {
       consumers[i] = consumerFactory.create(buffer, initialRngSeed);
+      consumers[i].setName("CONSUMER " + i);
     }
   }
 
@@ -111,7 +115,7 @@ public class StandardTask implements Task {
     taskResult.addTaskDuration(timer.getElapsed());
 
     for (Producer producer : producers) {
-
+      // TODO
     }
   }
 

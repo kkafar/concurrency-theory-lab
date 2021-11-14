@@ -23,6 +23,7 @@ public class Experiment {
   private final ArrayList<Task> taskList;
 
   private Buffer buffer;
+  private boolean taskLog = false;
 
   public Experiment(
       final BufferFactory bufferFactory,
@@ -76,6 +77,10 @@ public class Experiment {
     });
   }
 
+  public void setLog(final boolean log) {
+    taskLog = log;
+  }
+
   /**
    * Returns result of conducted experiment. Note that conduct() method should be called
    * before obtaining the result.
@@ -88,10 +93,11 @@ public class Experiment {
 
   /**
    * Executes all registered tasks and saves their results. Result is later
-   * available via getResult() method
+   * available via getResult method
    */
   public void conduct() {
     taskList.forEach(task -> {
+      task.setLog(taskLog);
       try {
         task.run();
         experimentResult.addTaskResult(task.getResult());
