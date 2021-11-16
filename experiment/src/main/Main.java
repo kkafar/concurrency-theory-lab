@@ -1,20 +1,30 @@
 package main;
 
+import main.actors.impl.*;
+import main.actors.interfaces.Consumer;
+import main.actors.interfaces.ConsumerFactory;
+import main.actors.interfaces.Producer;
+import main.actors.interfaces.ProducerFactory;
 import main.buffer.impl.FourCondsBufferProxy;
+import main.buffer.interfaces.BufferFactory;
 import main.experiment.Experiment;
-import main.experiment.task.impl.StandardTask;
-import main.actors.impl.RandomPortionConsumer;
-import main.actors.impl.RandomPortionProducer;
 import main.buffer.impl.ThreeLocksBufferProxy;
+import main.experiment.ExperimentResult;
+import main.experiment.analyzer.ExperimentResultAnalyzer;
+import main.experiment.task.impl.StandardTask;
 import main.experiment.task.impl.StandardTaskConfiguration;
+import main.experiment.task.interfaces.TaskConfiguration;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class Main {
-  private static final int N_PRODUCERS = 3;
-  private static final int N_CONSUMERS = 3;
-  private static final int BUFFER_SIZE = 10;
-  private static final int BUFFER_OPS = 10;
-  private static final int N_REPEATS = 2;
-  private static final int RNG_SEED = 10;
+//  private static final int N_PRODUCERS = 3;
+//  private static final int N_CONSUMERS = 3;
+//  private static final int BUFFER_SIZE = 10;
+//  private static final int BUFFER_OPS = 10000;
+private static final int N_REPEATS = 4;
+private static final int RNG_SEED = 10;
 
   private static final int[] N_PRODUCERS_ARR = {
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10
@@ -29,58 +39,80 @@ public class Main {
   };
 
   private static final int[] BUFFER_OPS_ARR = {
-      1000, 5000, 10000, 15000, 20000, 25000
+      10000, 50000, 100000, 150000, 200000, 250000
+  };
+
+  private static final ConsumerFactory[] CONSUMER_FACTORY_ARR = {
+      RandomPortionConsumer::new,
+      MinimalPortionConsumer::new,
+      MaximumPortionConsumer::new
+  };
+
+  private static final ProducerFactory[] PRODUCER_FACTORY_ARR = {
+      RandomPortionProducer::new,
+      MinimalPortionProducer::new,
+      MaximumPortionProducer::new
+  };
+
+  private static final BufferFactory[] BUFFER_FACTORY_ARR = {
+      ThreeLocksBufferProxy::new,
+      FourCondsBufferProxy::new
   };
 
   private static final boolean log = true;
 
   public static void main(String[] args) throws InterruptedException {
-    conductThreeLocksExperiment();
-
-    conductFourCondsExperiment();
+    conductExperiments(getExperiments(getTaskConfigurations()));
   }
 
-  private static void conductThreeLocksExperiment() {
-    Experiment experiment = new Experiment(
-        ThreeLocksBufferProxy::new,
-        RandomPortionProducer::new,
-        RandomPortionConsumer::new,
-        StandardTask::new,
-        RNG_SEED,
-        N_REPEATS
-    );
-    experiment.register(
-        new StandardTaskConfiguration(
-            "TASK DESCRIPTION",
-            N_PRODUCERS,
-            N_CONSUMERS,
-            BUFFER_SIZE,
-            BUFFER_OPS
-        )
-    );
-    experiment.setLog(log);
-    experiment.conduct();
+  private static List<TaskConfiguration> getTaskConfigurations() {
+    List<TaskConfiguration> taskConfigurations = new LinkedList<>();
+    for (int nProd : N_PRODUCERS_ARR) {
+      for (int nCons : N_CONSUMERS_ARR) {
+        for (int bufSize : BUFFER_SIZE_ARR) {
+          for (int bufOps : BUFFER_OPS_ARR) {
+            taskConfigurations.add(new StandardTaskConfiguration(
+                "Three locks. Random producer & consumer",
+                nProd,
+                nCons,
+                bufSize,
+                bufOps
+            ));
+          }
+        }
+      }
+    }
+    return taskConfigurations;
   }
 
-  private static void conductFourCondsExperiment() {
-    Experiment experiment = new Experiment(
-        FourCondsBufferProxy::new,
-        RandomPortionProducer::new,
-        RandomPortionConsumer::new,
-        StandardTask::new,
-        RNG_SEED,
-        N_REPEATS
-    );
-    experiment.register(
-        new StandardTaskConfiguration(
-            "TASK DESCRIPTION",
-            N_PRODUCERS,
-            N_CONSUMERS,
-            BUFFER_SIZE,
-            BUFFER_OPS
-        )
-    );
-    experiment.setLog(log);
-    experiment.conduct();
+  private static List<Experiment> getExperiments(List<TaskConfiguration> taskConfigurations) {
+    List<Experiment> experiments = new LinkedList<>();
+    Experiment experiment;
+    for (ConsumerFactory consumerFactory : CONSUMER_FACTORY_ARR) {
+      for (ProducerFactory producerFactory : PRODUCER_FACTORY_ARR) {
+        for (BufferFactory bufferFactory : BUFFER_FACTORY_ARR) {
+          experiment = new Experiment(
+              bufferFactory,
+              producerFactory,
+              consumerFactory,
+              StandardTask::new,
+              RNG_SEED,
+              N_REPEATS
+          );
+          experiment.registerAll(taskConfigurations);
+          experiments.add(experiment);
+        }
+      }
+    }
+    return experiments;
+  }
+
+  private static void conductExperiments(List<Experiment> experiments) {
+    ExperimentResultAnalyzer analyzer = new ExperimentResultAnalyzer();
+    for (Experiment experiment : experiments) {
+      experiment.setLog(true);
+      experiment.conduct();
+      analyzer.analyze(experiment.getResult());
+    }
   }
 }
