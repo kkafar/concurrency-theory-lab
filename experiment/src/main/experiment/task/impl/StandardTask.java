@@ -6,6 +6,7 @@ import main.buffer.interfaces.BufferFactory;
 import main.actors.interfaces.Consumer;
 import main.actors.interfaces.Producer;
 import main.buffer.interfaces.Buffer;
+import main.experiment.log.LogOptions;
 import main.experiment.task.interfaces.Task;
 import main.experiment.task.interfaces.TaskResult;
 import main.utils.Timer;
@@ -22,7 +23,7 @@ public final class StandardTask implements Task {
 
   private Buffer buffer;
   private StandardTaskResult taskResult;
-  private boolean log = false;
+  private LogOptions logOptions = null;
 
   private final long initialRngSeed;
   private final String description;
@@ -61,17 +62,13 @@ public final class StandardTask implements Task {
 //    setup();
   }
 
-  public void setLog(final boolean log) {
-    this.log = log;
-  }
-
   private void setup() {
     producers = new Producer[numberOfProducers];
     consumers = new Consumer[numberOfConsumers];
     buffer = bufferFactory.create(bufferSize, bufferOperationsBound, false);
     initProducers();
     initConsumers();
-    buffer.setLog(log);
+    buffer.setLog(logOptions != null && logOptions.contains(LogOptions.LOG_INSIDE_BUFFER));
   }
 
   private void initProducers() {
@@ -100,6 +97,11 @@ public final class StandardTask implements Task {
   @Override
   public TaskResult getResult() {
     return taskResult;
+  }
+
+  @Override
+  public void setLogOptions(LogOptions logOptions) {
+    this.logOptions = logOptions;
   }
 
   private void join() throws InterruptedException {
@@ -135,7 +137,14 @@ public final class StandardTask implements Task {
     return description;
   }
 
+  public String toString() {
+    return description;
+  }
+
   public void run() throws InterruptedException {
+    if (logOptions != null && logOptions.contains(LogOptions.LOG_INSIDE_TASK)) {
+      System.out.println(this);
+    }
     for (int i = 0; i < repeats; ++i) {
       setup();
       timer.start();

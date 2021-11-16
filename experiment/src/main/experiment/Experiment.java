@@ -1,9 +1,15 @@
 package main.experiment;
 
+import main.actors.impl.*;
+import main.actors.interfaces.Consumer;
 import main.actors.interfaces.ConsumerFactory;
+import main.actors.interfaces.Producer;
 import main.actors.interfaces.ProducerFactory;
+import main.buffer.impl.FourCondsBufferProxy;
+import main.buffer.impl.ThreeLocksBufferProxy;
 import main.buffer.interfaces.Buffer;
 import main.buffer.interfaces.BufferFactory;
+import main.experiment.log.LogOptions;
 import main.experiment.task.interfaces.Task;
 import main.experiment.task.interfaces.TaskConfiguration;
 import main.experiment.task.interfaces.TaskFactory;
@@ -23,7 +29,7 @@ public class Experiment {
   private final ArrayList<Task> taskList;
 
   private Buffer buffer;
-  private boolean taskLog = false;
+  private LogOptions logOptions = null;
 
   public Experiment(
       final BufferFactory bufferFactory,
@@ -77,8 +83,52 @@ public class Experiment {
     });
   }
 
-  public void setLog(final boolean log) {
-    taskLog = log;
+  public void setLogOptions(LogOptions logOptions) {
+    this.logOptions = logOptions;
+  }
+
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    Buffer mockBuffer = bufferFactory.create(10, 10, false);
+
+    if (mockBuffer instanceof FourCondsBufferProxy) {
+      stringBuilder.append("Buffer: FourCondsBufferProxy\n");
+    } else if (mockBuffer instanceof ThreeLocksBufferProxy) {
+      stringBuilder.append("Buffer: ThreeLocksBufferProxy\n");
+    } else {
+      stringBuilder.append("Buffer: Unknown type\n");
+    }
+
+    Producer producer = producerFactory.create(mockBuffer, 10);
+    if (producer instanceof RandomPortionProducer) {
+      stringBuilder.append("Producer: RandomPortion\n");
+    } else if (producer instanceof MinimalPortionProducer) {
+      stringBuilder.append("Producer: MinimalPortion\n");
+    } else if (producer instanceof MaximumPortionProducer) {
+      stringBuilder.append("Producer: MaximumPortion\n");
+    } else {
+      stringBuilder.append("Producer: Unknown type\n");
+    }
+
+    Consumer consumer = consumerFactory.create(mockBuffer, 10);
+
+    if (consumer instanceof RandomPortionConsumer) {
+      stringBuilder.append("Consumer: RandomPortion\n");
+    } else if (consumer instanceof MinimalPortionConsumer) {
+      stringBuilder.append("Consumer: MinimalPortion\n");
+    } else if (consumer instanceof MaximumPortionConsumer) {
+      stringBuilder.append("Consumer: MaximumPortion\n");
+    } else {
+      stringBuilder.append("Consumer: Unknown type\n");
+    }
+
+    return stringBuilder
+        .append("Initial seed: ")
+        .append(startingRngSeed)
+        .append("\nRepeats: ")
+        .append(singleTaskRepeats)
+        .append("\n")
+        .toString();
   }
 
   /**
@@ -96,8 +146,11 @@ public class Experiment {
    * available via getResult method
    */
   public void conduct() {
+    if (logOptions != null && logOptions.contains(LogOptions.LOG_EXPERIMENT)) {
+      System.out.println(this);
+    }
     taskList.forEach(task -> {
-      task.setLog(taskLog);
+      task.setLogOptions(logOptions);
       try {
         task.run();
         experimentResult.addTaskResult(task.getResult());

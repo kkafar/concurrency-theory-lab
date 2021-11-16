@@ -1,5 +1,7 @@
 package main.experiment.task.interfaces;
 
+import main.experiment.log.LogOptions;
+
 public interface Task {
   /**
    * Execute task
@@ -17,7 +19,7 @@ public interface Task {
   TaskResult getResult();
 
   /**
-   * @param log `true` if internal information should be logged
+   * @param logOptions logging options
    */
-  void setLog(final boolean log);
+  void setLogOptions(final LogOptions logOptions);
 }

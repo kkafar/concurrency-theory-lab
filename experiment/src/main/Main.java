@@ -8,6 +8,8 @@ import main.buffer.interfaces.BufferFactory;
 import main.experiment.Experiment;
 import main.buffer.impl.ThreeLocksBufferProxy;
 import main.experiment.analyzer.ExperimentResultAnalyzer;
+import main.experiment.log.LogOptions;
+import main.experiment.log.LogOptionsBuilder;
 import main.experiment.task.impl.StandardTask;
 import main.experiment.task.impl.StandardTaskConfiguration;
 import main.experiment.task.interfaces.TaskConfiguration;
@@ -16,7 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Main {
-private static final int N_REPEATS = 4;
+private static final int N_REPEATS = 1;
 private static final int RNG_SEED = 10;
 
   private static final int[] N_PRODUCERS_ARR = {
@@ -65,7 +67,7 @@ private static final int RNG_SEED = 10;
         for (int bufSize : BUFFER_SIZE_ARR) {
           for (int bufOps : BUFFER_OPS_ARR) {
             taskConfigurations.add(new StandardTaskConfiguration(
-                "Three locks. Random producer & consumer",
+                "TASK DESCRIPTION",
                 nProd,
                 nCons,
                 bufSize,
@@ -102,7 +104,12 @@ private static final int RNG_SEED = 10;
 
   private static void conductExperiments(List<Experiment> experiments) {
     ExperimentResultAnalyzer analyzer = new ExperimentResultAnalyzer();
+    LogOptions logOptions = new LogOptionsBuilder()
+        .logExperiment()
+        .logInsideTask()
+        .build();
     for (Experiment experiment : experiments) {
+      experiment.setLogOptions(logOptions);
       experiment.conduct();
       analyzer.analyze(experiment.getResult());
     }
