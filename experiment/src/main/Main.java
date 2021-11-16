@@ -1,15 +1,12 @@
 package main;
 
 import main.actors.impl.*;
-import main.actors.interfaces.Consumer;
 import main.actors.interfaces.ConsumerFactory;
-import main.actors.interfaces.Producer;
 import main.actors.interfaces.ProducerFactory;
 import main.buffer.impl.FourCondsBufferProxy;
 import main.buffer.interfaces.BufferFactory;
 import main.experiment.Experiment;
 import main.buffer.impl.ThreeLocksBufferProxy;
-import main.experiment.ExperimentResult;
 import main.experiment.analyzer.ExperimentResultAnalyzer;
 import main.experiment.task.impl.StandardTask;
 import main.experiment.task.impl.StandardTaskConfiguration;
@@ -19,10 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Main {
-//  private static final int N_PRODUCERS = 3;
-//  private static final int N_CONSUMERS = 3;
-//  private static final int BUFFER_SIZE = 10;
-//  private static final int BUFFER_OPS = 10000;
 private static final int N_REPEATS = 4;
 private static final int RNG_SEED = 10;
 
@@ -110,7 +103,6 @@ private static final int RNG_SEED = 10;
   private static void conductExperiments(List<Experiment> experiments) {
     ExperimentResultAnalyzer analyzer = new ExperimentResultAnalyzer();
     for (Experiment experiment : experiments) {
-      experiment.setLog(true);
       experiment.conduct();
       analyzer.analyze(experiment.getResult());
     }
