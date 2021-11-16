@@ -6,12 +6,8 @@ import main.experiment.task.interfaces.TaskResult;
 public class ExperimentResultAnalyzer {
   public ExperimentResultAnalyzer() {}
 
-  private static String taskSeparator = "===============================================";
-  private static String sectionSeparator = "+++++++++++++++++++++++++++++++++++++++++++++++";
-
   public void analyze(ExperimentResult result) {
-    for (TaskResult taskResult : result.getListOfResults()) {
-    }
+    System.out.println(result.toString());
   }
 
   private static String printDurations(TaskResult taskResult) {
@@ -20,8 +16,6 @@ public class ExperimentResultAnalyzer {
     for (long duration : taskResult.getDurationsInMs()) {
       stringBuilder.append(duration + " ");
     }
+    return stringBuilder.toString();
   }
-
-
-
 }

@@ -132,15 +132,7 @@ public final class StandardTask implements Task {
   }
 
   public String getDescription() {
-    return description +
-        " PRODUCERS: " +
-        numberOfProducers +
-        " CONSUMERS: " +
-        numberOfConsumers +
-        " BUFFER_SIZE: " +
-        bufferSize +
-        " OPERATION_BOUND: " +
-        bufferOperationsBound;
+    return description;
   }
 
   public void run() throws InterruptedException {

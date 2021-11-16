@@ -51,19 +51,43 @@ abstract public class TaskResult {
     taskDescription = description;
   }
 
-  public String getTimeLine() {
-     
+  private String getDurationsDescription() {
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.append("Durations\n[ ");
+      for (long duration : durationsInMs) {
+        stringBuilder.append(duration).append(" ");
+      }
+      return stringBuilder.append("]\n").toString();
+  }
+
+  private String getOperationsByConsumersDescription() {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("Consumers\n[ ");
+    for (long operations : operationsCompletedByConsumers) {
+      stringBuilder.append(operations).append(" ");
+    }
+    return stringBuilder.append("]\n").toString();
+  }
+
+  private String getOperationsByProducersDescription() {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("Producers\n[ ");
+    for (long operations : operationsCompletedByProducers) {
+      stringBuilder.append(operations).append(" ");
+    }
+    return stringBuilder.append("]\n").toString();
   }
 
   public String toString() {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append(taskSeparator);
-    stringBuilder.append(getTaskDescription());
-    stringBuilder.append(sectionSeparator);
-
-
-
-    stringBuilder.append(taskSeparator);
-    return stringBuilder.toString();
+    return taskSeparator +
+        getTaskDescription() +
+        sectionSeparator +
+        getDurationsDescription() +
+        sectionSeparator +
+        getOperationsByConsumersDescription() +
+        sectionSeparator +
+        getOperationsByProducersDescription() +
+        taskSeparator +
+        "\n";
   }
 }

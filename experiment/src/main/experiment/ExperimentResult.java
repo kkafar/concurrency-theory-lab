@@ -24,4 +24,12 @@ public class ExperimentResult {
   public List<TaskResult> getListOfResults() {
     return results;
   }
+
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    for (TaskResult result : results) {
+      stringBuilder.append(result.toString());
+    }
+    return stringBuilder.toString();
+  }
 }

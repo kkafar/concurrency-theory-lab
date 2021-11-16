@@ -128,7 +128,6 @@ public final class FourCondsBufferProxy implements Buffer {
 
   private void signalAllActors() {
     if (!actorsSignalled) {
-      System.out.println("Signalled all actors");
       actorsSignalled = true;
       firstConsumer.signal();
       firstProducer.signal();

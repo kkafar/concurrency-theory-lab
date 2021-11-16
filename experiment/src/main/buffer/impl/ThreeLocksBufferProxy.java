@@ -98,7 +98,6 @@ public final class ThreeLocksBufferProxy implements Buffer {
 
   public void signalAllActors() {
     if (!actorsSignalled) {
-      System.out.println("Signalled all actors");
       actorsSignalled = true;
       if (sharedLock.isHeldByCurrentThread()) {
         sharedCondition.signalAll();

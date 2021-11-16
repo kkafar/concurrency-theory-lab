@@ -38,14 +38,14 @@ abstract public class TaskConfiguration {
   }
 
   public String getDescription() {
-    return description +
+    return description + "\n" +
         " PRODUCERS: " +
-        numberOfProducers +
+        numberOfProducers + "\n" +
         " CONSUMERS: " +
-        numberOfConsumers +
+        numberOfConsumers + "\n" +
         " BUFFER_SIZE: " +
-        bufferSize +
+        bufferSize + "\n" +
         " OPERATION_BOUND: " +
-        bufferOperationBound;
+        bufferOperationBound + "\n";
   }
 }
