@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class StandardTaskResult extends TaskResult {
+public final class StandardTaskResult extends TaskResult {
   public StandardTaskResult(int entries) {
     super(entries);
   }

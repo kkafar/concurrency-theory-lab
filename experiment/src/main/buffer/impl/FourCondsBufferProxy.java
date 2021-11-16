@@ -6,7 +6,7 @@ import main.buffer.interfaces.Buffer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class FourCondsBufferProxy implements Buffer {
+public final class FourCondsBufferProxy implements Buffer {
   private final ReentrantLock lock = new ReentrantLock();
   private final Condition producers = lock.newCondition();
   private final Condition consumers = lock.newCondition();

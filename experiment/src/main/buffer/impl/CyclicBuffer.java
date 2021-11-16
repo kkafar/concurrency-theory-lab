@@ -4,7 +4,7 @@ import main.buffer.interfaces.Buffer;
 
 import java.util.Arrays;
 
-public class CyclicBuffer implements Buffer {
+public final class CyclicBuffer implements Buffer {
   private final int size;
   private final Object[] buffer;
   private boolean log;

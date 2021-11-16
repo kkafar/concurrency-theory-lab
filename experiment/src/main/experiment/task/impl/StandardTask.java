@@ -10,7 +10,7 @@ import main.experiment.task.interfaces.Task;
 import main.experiment.task.interfaces.TaskResult;
 import main.utils.Timer;
 
-public class StandardTask implements Task {
+public final class StandardTask implements Task {
   private final long bufferOperationsBound;
   private final int bufferSize;
   private final int numberOfProducers;
