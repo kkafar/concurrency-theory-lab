@@ -1,7 +1,5 @@
 package main.experiment.task.interfaces;
 
-import main.buffer.interfaces.BufferFactory;
-
 abstract public class TaskConfiguration {
   protected final int numberOfProducers;
   protected final int numberOfConsumers;
@@ -40,6 +38,14 @@ abstract public class TaskConfiguration {
   }
 
   public String getDescription() {
-    return description;
+    return description +
+        " PRODUCERS: " +
+        numberOfProducers +
+        " CONSUMERS: " +
+        numberOfConsumers +
+        " BUFFER_SIZE: " +
+        bufferSize +
+        " OPERATION_BOUND: " +
+        bufferOperationBound;
   }
 }

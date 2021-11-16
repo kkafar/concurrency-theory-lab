@@ -111,16 +111,36 @@ public class StandardTask implements Task {
     }
   }
 
-  private void extractResult(StandardTaskResult result) {
+  private void extractResult() {
     taskResult.addTaskDuration(timer.getElapsed());
 
     for (Producer producer : producers) {
-      // TODO
+      taskResult.addOperationsCompletedByProducer(
+          producer.getNumberOfCompletedOperations()
+      );
+    }
+
+    for (Consumer consumer : consumers) {
+      taskResult.addOperationsCompletedByConsumer(
+          consumer.getNumberOfCompletedOperations()
+      );
     }
   }
 
   public StandardTaskResult getTaskResult() {
     return taskResult;
+  }
+
+  public String getDescription() {
+    return description +
+        " PRODUCERS: " +
+        numberOfProducers +
+        " CONSUMERS: " +
+        numberOfConsumers +
+        " BUFFER_SIZE: " +
+        bufferSize +
+        " OPERATION_BOUND: " +
+        bufferOperationsBound;
   }
 
   public void run() throws InterruptedException {
@@ -130,6 +150,8 @@ public class StandardTask implements Task {
       start();
       join();
       timer.stop();
+      extractResult();
     }
+    taskResult.setTaskDescription(getDescription());
   }
 }
