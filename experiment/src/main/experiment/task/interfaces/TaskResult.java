@@ -81,11 +81,8 @@ abstract public class TaskResult {
   public String toString() {
     return taskSeparator +
         getTaskDescription() +
-        sectionSeparator +
         getDurationsDescription() +
-        sectionSeparator +
         getOperationsByConsumersDescription() +
-        sectionSeparator +
         getOperationsByProducersDescription() +
         taskSeparator +
         "\n";

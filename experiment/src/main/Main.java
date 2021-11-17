@@ -14,27 +14,46 @@ import main.experiment.task.impl.StandardTask;
 import main.experiment.task.impl.StandardTaskConfiguration;
 import main.experiment.task.interfaces.TaskConfiguration;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Main {
-private static final int N_REPEATS = 1;
-private static final int RNG_SEED = 10;
+  private static final int N_REPEATS = 10;
+  private static final int RNG_SEED = 10;
+
+  private static final String LOG_FILE_PATH = "/home/kkafara/studies/cs/5_term/twsp/lab/experiment/data/temp";
+
+//  private static final int[] N_PRODUCERS_ARR = {
+//      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+//  };
+//
+//  private static final int[] N_CONSUMERS_ARR = {
+//      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+//  };
 
   private static final int[] N_PRODUCERS_ARR = {
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+      1, 4, 7, 10
   };
 
   private static final int[] N_CONSUMERS_ARR = {
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+      1, 4, 7, 10
   };
+
+//  private static final int[] BUFFER_SIZE_ARR = {
+//      5, 10, 15, 20, 25, 30, 35, 40, 45, 50
+//  };
 
   private static final int[] BUFFER_SIZE_ARR = {
-      5, 10, 15, 20, 25, 30, 35, 40, 45, 50
+      10
   };
 
+//  private static final int[] BUFFER_OPS_ARR = {
+//      10000, 50000, 100000, 150000, 200000, 250000
+//  };
+
   private static final int[] BUFFER_OPS_ARR = {
-      10000, 50000, 100000, 150000, 200000, 250000
+      200000
   };
 
   private static final ConsumerFactory[] CONSUMER_FACTORY_ARR = {
@@ -54,9 +73,7 @@ private static final int RNG_SEED = 10;
       FourCondsBufferProxy::new
   };
 
-  private static final boolean log = true;
-
-  public static void main(String[] args) throws InterruptedException {
+  public static void main(String[] args) throws InterruptedException, IOException {
     conductExperiments(getExperiments(getTaskConfigurations()));
   }
 
@@ -102,7 +119,7 @@ private static final int RNG_SEED = 10;
     return experiments;
   }
 
-  private static void conductExperiments(List<Experiment> experiments) {
+  private static void conductExperiments(List<Experiment> experiments) throws IOException {
     ExperimentResultAnalyzer analyzer = new ExperimentResultAnalyzer();
     LogOptions logOptions = new LogOptionsBuilder()
         .logExperiment()
@@ -111,7 +128,8 @@ private static final int RNG_SEED = 10;
     for (Experiment experiment : experiments) {
       experiment.setLogOptions(logOptions);
       experiment.conduct();
-      analyzer.analyze(experiment.getResult());
+//      analyzer.analyze(experiment.getResult());
+      analyzer.analyzeToFile(LOG_FILE_PATH, experiment.getResult());
     }
   }
 }

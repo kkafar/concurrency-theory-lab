@@ -8,8 +8,10 @@ import java.util.List;
 
 public class ExperimentResult {
   private final LinkedList<TaskResult> results;
+  private String description;
 
   public ExperimentResult() {
+    description = "DESCRIPTION NOT PROVIDED";
     results = new LinkedList<>();
   }
 
@@ -25,8 +27,13 @@ public class ExperimentResult {
     return results;
   }
 
+  public void addExperimentDescription(String description) {
+    this.description = description;
+  }
+
   public String toString() {
     StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(description).append("\n");
     for (TaskResult result : results) {
       stringBuilder.append(result.toString());
     }

@@ -146,6 +146,7 @@ public class Experiment {
    * available via getResult method
    */
   public void conduct() {
+    experimentResult.addExperimentDescription(toString());
     if (logOptions != null && logOptions.contains(LogOptions.LOG_EXPERIMENT)) {
       System.out.println(this);
     }
