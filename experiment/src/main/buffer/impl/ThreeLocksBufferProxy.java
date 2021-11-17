@@ -7,9 +7,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class ThreeLocksBufferProxy implements Buffer {
-  private final ReentrantLock sharedLock = new ReentrantLock();
-  private final ReentrantLock consumersLock = new ReentrantLock();
-  private final ReentrantLock producersLock = new ReentrantLock();
+  private final ReentrantLock sharedLock = new ReentrantLock(true);
+  private final ReentrantLock consumersLock = new ReentrantLock(true);
+  private final ReentrantLock producersLock = new ReentrantLock(true);
   private final Condition sharedCondition = sharedLock.newCondition();
 
   private final long maxOperations;
@@ -41,6 +41,11 @@ public final class ThreeLocksBufferProxy implements Buffer {
     }
     try {
       sharedLock.lock();
+      if (completedOperations >= maxOperations) {
+        ((Actor) Thread.currentThread()).deactivate();
+        signalAllActors();
+        return;
+      }
       while (!buffer.canPut(objects.length)) {
         sharedCondition.await();
         if (completedOperations >= maxOperations) {
@@ -74,6 +79,11 @@ public final class ThreeLocksBufferProxy implements Buffer {
     }
     try {
       sharedLock.lock();
+      if (completedOperations >= maxOperations) {
+        ((Actor) Thread.currentThread()).deactivate();
+        signalAllActors();
+        return null;
+      }
       while (!buffer.canTake(n)) {
         sharedCondition.await();
         if (completedOperations >= maxOperations) {
