@@ -1,6 +1,13 @@
+# intellij files
 .idea
 
+# build files
+.gradle
 out
 
-.gradle
+# notes
+notes.md
+todo.md
 
+# data
+data
