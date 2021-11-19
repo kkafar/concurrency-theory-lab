@@ -1,4 +1,4 @@
-package main.ao.struct;
+package main.ao.struct.impls;
 
 public class Promise<T> {
   T value;

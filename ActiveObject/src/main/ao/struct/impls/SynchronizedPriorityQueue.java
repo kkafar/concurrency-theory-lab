@@ -1,6 +1,6 @@
-package main.ao.struct;
+package main.ao.struct.impls;
 
-import main.ao.server.interfaces.MethodRequest;
+import main.ao.server.methodrequest.interfaces.MethodRequest;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;

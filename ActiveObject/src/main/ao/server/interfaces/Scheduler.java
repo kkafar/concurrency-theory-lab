@@ -1,4 +1,4 @@
-package main.ao.server;
+package main.ao.server.interfaces;
 
 public interface Scheduler {
 }
