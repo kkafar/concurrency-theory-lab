@@ -23,6 +23,10 @@ abstract public class BoundedSizeBufferWithOpsLimit extends BoundedBuffer {
     notifyOnOpsLimitReached();
   }
 
+  public boolean isBlocked() {
+    return operationLimitReached;
+  }
+
   public void registerBufferOpsLimitReachedListener(BufferOpsLimitReachedListener listener) {
     listeners.add(listener);
   }

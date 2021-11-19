@@ -3,8 +3,6 @@ package main.ao.struct.impls;
 import main.ao.server.methodrequest.interfaces.MethodRequest;
 import main.ao.struct.interfaces.ActivationQueue;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SynchronizedPriorityQueue extends ActivationQueue {
@@ -30,6 +28,16 @@ public class SynchronizedPriorityQueue extends ActivationQueue {
     lock.lock();
     try {
       return super.poll();
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  @Override
+  public MethodRequest peek() {
+    lock.lock();
+    try {
+      return super.peek();
     } finally {
       lock.unlock();
     }

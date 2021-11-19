@@ -1,6 +1,8 @@
 package main.buffer.interfaces;
 
 abstract public class Buffer {
+  protected boolean log = false;
+
   /**
    * Puts objects given in array into the buffer
    *
@@ -9,7 +11,7 @@ abstract public class Buffer {
    *
    * @param objects objects to put into the buffer
    */
-  abstract public void put(final Object[] objects);
+  abstract public boolean put(final Object[] objects);
 
   /**
    * Takes exactly n instances of resource from the buffer
@@ -28,7 +30,9 @@ abstract public class Buffer {
    *
    * @param log true if internal information should be logged
    */
-  abstract public void setLog(final boolean log);
+  public void setLog(final boolean log) {
+    this.log = log;
+  }
 
   /**
    * Determines whether given count of resource is available to take from the buffer

@@ -8,42 +8,29 @@ import main.buffer.interfaces.BoundedSizeBufferWithOpsLimit;
 import main.buffer.interfaces.BoundedBufferWithOpsLimitFactory;
 import main.buffer.interfaces.BufferOpsLimitReachedListener;
 
-public class BufferServant extends Servant implements BufferOpsLimitReachedListener {
+public class BufferServant extends BoundedSizeBufferWithOpsLimit implements BufferOpsLimitReachedListener {
   private final BoundedSizeBufferWithOpsLimit buffer;
 
-  private boolean bufferOpsLimitReached;
 
-  public BufferServant(final int bufferSize, final long actions, BoundedBufferWithOpsLimitFactory bufferFactory) {
-    buffer = bufferFactory.create(bufferSize, actions, false);
+  public BufferServant(final int bufferSize, final long maxOperations, BoundedBufferWithOpsLimitFactory bufferFactory) {
+    super(bufferSize, maxOperations);
+    buffer = bufferFactory.create(bufferSize, maxOperations, true);
     buffer.registerBufferOpsLimitReachedListener(this);
-    bufferOpsLimitReached = false;
   }
 
-  @Override
-  public void dispatch(MethodRequest methodRequest) {
-    if (bufferOpsLimitReached) {
-      methodRequest.getPromise().reject();
-    } else if (methodRequest.getMethodName().equals("put")) {
-      PutRequest putRequest = (PutRequest) methodRequest;
-      putRequest.getPromise().resolve(put(putRequest.getPortion()));
-    } else if (methodRequest.getMethodName().equals("take")) {
-      TakeRequest takeRequest = (TakeRequest) methodRequest;
-      takeRequest.getPromise().resolve(take(takeRequest.getPortionSize()));
-    } else {
-      throw new IllegalArgumentException("Unknown method type: " + methodRequest.getMethodName());
-    }
-  }
-
-  private boolean put(Object[] portion) {
-    if (!bufferOpsLimitReached) {
+  public boolean put(Object[] portion) {
+    System.out.println();
+    if (!operationLimitReached) {
       buffer.put(portion);
+      ++completedOperations;
       return true;
     }
     return false;
   }
 
-  private Object[] take(int portionSize) {
-    if (!bufferOpsLimitReached) {
+  public Object[] take(int portionSize) {
+    if (!operationLimitReached) {
+      ++completedOperations;
       return buffer.take(portionSize);
     } else {
       return null;
@@ -51,7 +38,18 @@ public class BufferServant extends Servant implements BufferOpsLimitReachedListe
   }
 
   @Override
+  public boolean canTake(int portionSize) {
+    return buffer.canTake(portionSize);
+  }
+
+  @Override
+  public boolean canPut(int portionSize) {
+    return buffer.canPut(portionSize);
+  }
+
+  @Override
   public void notifyOnOpsLimitReached() {
-    bufferOpsLimitReached = true;
+    block();
+    System.out.println("Operations completed on BufferServant");
   }
 }

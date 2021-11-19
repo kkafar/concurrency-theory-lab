@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
   private final Object[] buffer;
-  private boolean log;
 
   private int firstEmptyIndex = 0;
   private int firstOccupiedIndex = 0;
@@ -21,7 +20,7 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
     Arrays.fill(buffer, null);
   }
 
-  public void put(Object[] objects) {
+  public boolean put(Object[] objects) {
     for (int i = 0; i < objects.length; ++i) {
       buffer[firstEmptyIndex++] = objects[i];
       firstEmptyIndex %= size;
@@ -33,6 +32,7 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
       System.out.println(
           "P:" + objects.length + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + " " + this
       );
+    return true;
   }
 
   public Object[] take(final int n) {
@@ -46,7 +46,7 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
     ++completedOperations;
     if (completedOperations >= maxOperations) block();
     if (log)
-      System.out.println("T:" + n + ":" +firstOccupiedIndex + ":" + firstEmptyIndex + " " + this);
+      System.out.println("T:" + n + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + " " + this);
     return retArray;
   }
 
@@ -56,10 +56,6 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
 
   public boolean canTake(final int n) {
     return occupiedCount >= n && !operationLimitReached;
-  }
-
-  public void setLog(final boolean log) {
-    this.log = log;
   }
 
   @Override
