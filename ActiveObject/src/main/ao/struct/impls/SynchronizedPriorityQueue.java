@@ -1,18 +1,14 @@
 package main.ao.struct.impls;
 
 import main.ao.server.methodrequest.interfaces.MethodRequest;
+import main.ao.struct.interfaces.ActivationQueue;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SynchronizedPriorityQueue extends PriorityQueue<MethodRequest> {
+public class SynchronizedPriorityQueue extends ActivationQueue {
   private final ReentrantLock lock;
-
-  public SynchronizedPriorityQueue(final int initialCapacity, Comparator<? super MethodRequest> comparator) {
-    super(initialCapacity, comparator);
-    this.lock = new ReentrantLock(true);
-  }
 
   public SynchronizedPriorityQueue() {
     super();

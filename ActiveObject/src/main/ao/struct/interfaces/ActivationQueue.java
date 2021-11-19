@@ -1,4 +1,8 @@
 package main.ao.struct.interfaces;
 
-public interface ActivationQueue {
+import main.ao.server.methodrequest.interfaces.MethodRequest;
+
+import java.util.PriorityQueue;
+
+abstract public class ActivationQueue extends PriorityQueue<MethodRequest> {
 }
