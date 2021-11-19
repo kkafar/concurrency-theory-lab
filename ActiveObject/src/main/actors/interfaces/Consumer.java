@@ -29,7 +29,7 @@ abstract public class Consumer extends Actor {
       System.out.println("REJECTED CONSUMER");
       deactivate();
     } else {
-      System.out.println("UNDEFINED CONSUMER");
+//      System.out.println("UNDEFINED CONSUMER");
     }
     if (active) ++completedOperations;
   }

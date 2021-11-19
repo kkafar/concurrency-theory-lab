@@ -25,9 +25,8 @@ public class StandardScheduler extends Scheduler {
 
   @Override
   public void add(MethodRequest methodRequest) {
-    if (active) {
-      freshList.putBack(methodRequest);
-    }
+    System.out.println("Adding MethodRequest to ActivationStruct");
+    freshList.putBack(methodRequest);
   }
 
   @Override
@@ -43,18 +42,20 @@ public class StandardScheduler extends Scheduler {
     while (active) {
       if (!awaitingList.isEmpty()) {
         if (awaitingList.peekFirst().guard()) { // first top
-          if (!awaitingList.getFirst().call()) {
-            deactivate();
-            break;
-          }
+          awaitingList.getFirst().call();
+//          if (!awaitingList.getFirst().call()) {
+//            deactivate();
+//            break;
+//          }
         } else {
           while (!awaitingList.peekFirst().guard()) {
             request = freshList.getFirst();
             if (request.guard()) {
-              if (!request.call()) {
-                deactivate();
-                break;
-              }
+              request.call();
+//              if (!request.call()) {
+//                deactivate();
+//                break;
+//              }
 
             } else {
               awaitingList.putBack(request);
@@ -67,10 +68,11 @@ public class StandardScheduler extends Scheduler {
           awaitingList.putFront(request);
           request = freshList.getFirst();
         }
-        if (!request.call()) {
-          deactivate();
-          break;
-        }
+        request.call();
+//        if (!request.call()) {
+//          deactivate();
+//          break;
+//        }
       }
     }
   }

@@ -49,6 +49,6 @@ public class SharedBufferProxy implements BufferProxy, BufferOpsLimitReachedList
 
   @Override
   public void notifyOnOpsLimitReached() {
-    scheduler.deactivate();
+//    scheduler.deactivate();
   }
 }

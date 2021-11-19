@@ -19,7 +19,7 @@ public class Promise<T> {
     lock.lock();
     if (isNotConsumed()) {
       this.value = value;
-      System.out.println("Promise resolve");
+//      System.out.println("Promise resolve");
       isResolved = true;
     } else {
       lock.unlock();
@@ -32,7 +32,7 @@ public class Promise<T> {
     lock.lock();
     if (isNotConsumed()) {
       isRejected = true;
-      System.out.println("Promise reject");
+//      System.out.println("Promise reject");
     } else {
       lock.unlock();
       throw new IllegalStateException("Promise has already been consumed!");

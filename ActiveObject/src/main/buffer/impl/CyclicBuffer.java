@@ -21,16 +21,16 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
   }
 
   public boolean put(Object[] objects) {
-    if (completedOperations >= maxOperations) {
-      block();
-      return false;
-    }
+//    if (completedOperations >= maxOperations) {
+//      block();
+//      return false;
+//    }
     for (int i = 0; i < objects.length; ++i) {
       buffer[firstEmptyIndex++] = objects[i];
       firstEmptyIndex %= size;
     }
     occupiedCount += objects.length;
-    ++completedOperations;
+//    ++completedOperations;
     if (log)
       System.out.println(
           "P:" + objects.length + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + " " + this
@@ -39,10 +39,10 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
   }
 
   public Object[] take(final int n) {
-    if (completedOperations >= maxOperations) {
-      block();
-      return null;
-    }
+//    if (completedOperations >= maxOperations) {
+//      block();
+//      return null;
+//    }
     Object[] retArray = new Object[n];
     for (int i = 0; i < n; ++i) {
       retArray[i] = buffer[firstOccupiedIndex];
@@ -50,18 +50,26 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
       firstOccupiedIndex %= size;
     }
     occupiedCount -= n;
-    ++completedOperations;
+//    ++completedOperations;
     if (log)
       System.out.println("T:" + n + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + " " + this);
     return retArray;
   }
 
+//  public boolean canPut(final int n) {
+//    return size - occupiedCount >= n && !operationLimitReached;
+//  }
+
   public boolean canPut(final int n) {
-    return size - occupiedCount >= n && !operationLimitReached;
+    return size - occupiedCount >= n;
   }
 
+//  public boolean canTake(final int n) {
+//    return occupiedCount >= n && !operationLimitReached;
+//  }
+
   public boolean canTake(final int n) {
-    return occupiedCount >= n && !operationLimitReached;
+    return occupiedCount >= n;
   }
 
   @Override

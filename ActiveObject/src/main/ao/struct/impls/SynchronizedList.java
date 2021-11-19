@@ -33,7 +33,7 @@ public class SynchronizedList implements ActivationStruct {
 
   @Override
   public void putBack(MethodRequest request) {
-    if (cancelled) return;
+//    if (cancelled) return;
     lock.lock();
     try {
       requests.addLast(request);
@@ -65,7 +65,7 @@ public class SynchronizedList implements ActivationStruct {
 
   @Override
   public MethodRequest peekFirst() {
-    if (cancelled) return null;
+//    if (cancelled) return null;
     lock.lock();
     try {
       return requests.peekFirst();
@@ -76,7 +76,7 @@ public class SynchronizedList implements ActivationStruct {
 
   @Override
   public MethodRequest getFirst() {
-    if (cancelled) return null;
+//    if (cancelled) return null;
     lock.lock();
     try {
       MethodRequest ret = requests.pollFirst();
@@ -95,25 +95,25 @@ public class SynchronizedList implements ActivationStruct {
 
   @Override
   public boolean isEmpty() {
-    if (!cancelled) {
+//    if (!cancelled) {
       lock.lock();
       try {
         return requests.isEmpty();
       } finally {
         lock.unlock();
       }
-    }
-    return true;
+//    }
+//    return true;
   }
 
   @Override
   public void cancelAll() {
-    if (cancelled) return;
+//    if (cancelled) return;
     lock.lock();
     try {
-      cancelled = true;
-      requests.forEach(request -> request.getPromise().reject());
-      requests.clear();
+//      cancelled = true;
+//      requests.forEach(request -> request.getPromise().reject());
+//      requests.clear();
     } finally {
       emptyList.signalAll();
       lock.unlock();
