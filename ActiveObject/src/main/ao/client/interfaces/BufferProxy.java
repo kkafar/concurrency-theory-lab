@@ -1,8 +1,8 @@
 package main.ao.client.interfaces;
 
-import main.ao.struct.Promise;
+import main.ao.struct.impls.Promise;
 
 public interface BufferProxy {
-  Promise<Void> put(Object[] portion);
+  Promise<Boolean> put(Object[] portion);
   Promise<Object[]> take(final int portionSize);
 }
