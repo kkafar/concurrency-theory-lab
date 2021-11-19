@@ -1,7 +1,7 @@
 package main.ao.struct.impls;
 
 public class Promise<T> {
-  T value;
+  private T value;
   private boolean isResolved;
   private boolean isRejected;
 
@@ -12,16 +12,29 @@ public class Promise<T> {
   }
   
   public void resolve(T value) {
+    System.out.println("Promise resolve");
     if (isNotConsumed()) {
       this.value = value;
       isResolved = true;
+    } else {
+      throw new IllegalStateException("Promise has already been consumed!");
     }
   }
 
   public void reject() {
+    System.out.println("Promise reject");
     if (isNotConsumed()) {
       isRejected = true;
+    } else {
+      throw new IllegalStateException("Promise has already been consumed!");
     }
+  }
+
+  public T getValue() {
+    if (isResolved) {
+      return value;
+    }
+    return null;
   }
 
   public boolean isNotConsumed() {
