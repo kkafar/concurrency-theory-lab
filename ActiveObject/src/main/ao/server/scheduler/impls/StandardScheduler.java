@@ -43,20 +43,11 @@ public class StandardScheduler extends Scheduler {
       if (!awaitingList.isEmpty()) {
         if (awaitingList.peekFirst().guard()) { // first top
           awaitingList.getFirst().call();
-//          if (!awaitingList.getFirst().call()) {
-//            deactivate();
-//            break;
-//          }
         } else {
           while (!awaitingList.peekFirst().guard()) {
             request = freshList.getFirst();
             if (request.guard()) {
               request.call();
-//              if (!request.call()) {
-//                deactivate();
-//                break;
-//              }
-
             } else {
               awaitingList.putBack(request);
             }
@@ -69,10 +60,6 @@ public class StandardScheduler extends Scheduler {
           request = freshList.getFirst();
         }
         request.call();
-//        if (!request.call()) {
-//          deactivate();
-//          break;
-//        }
       }
     }
   }
