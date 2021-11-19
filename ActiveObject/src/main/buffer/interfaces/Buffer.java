@@ -49,4 +49,6 @@ abstract public class Buffer {
    * @return true if there are at least portionSize free spaces in the buffer
    */
   abstract public boolean canPut(final int portionSize);
+
+  abstract public int getSize();
 }

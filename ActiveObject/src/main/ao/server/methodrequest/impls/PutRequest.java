@@ -13,11 +13,13 @@ public class PutRequest extends MethodRequest<Boolean> {
   }
 
   @Override
-  public void call() {
+  public boolean call() {
     if (bufferServant.put(portion)) {
       promise.resolve(true);
+      return true;
     } else {
       promise.reject();
+      return false;
     }
   }
 

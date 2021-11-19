@@ -24,9 +24,10 @@ abstract public class Producer extends Actor {
   public void put(Object[] objects) {
     System.out.println("PUT");
     Promise<Boolean> promise = buffer.put(objects);
-    while (promise.isNotConsumed()) {
+    while (active && promise.isNotConsumed()) {
 //      System.out.println("Running extra work in Producer");
       extraWork.run();
+
     }
     if (promise.isResolved()) {
       System.out.println("RESOLVED PRODUCER");

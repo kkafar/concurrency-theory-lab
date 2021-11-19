@@ -13,12 +13,14 @@ public class TakeRequest extends MethodRequest<Object[]> {
   }
 
   @Override
-  public void call() {
+  public boolean call() {
     Object[] res = bufferServant.take(portionSize);
     if (res == null){
       promise.reject();
+      return false;
     } else {
       promise.resolve(bufferServant.take(portionSize));
+      return true;
     }
   }
 

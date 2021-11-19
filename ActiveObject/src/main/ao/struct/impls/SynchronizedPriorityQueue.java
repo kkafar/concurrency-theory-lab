@@ -1,30 +1,49 @@
 package main.ao.struct.impls;
 
 import main.ao.server.methodrequest.interfaces.MethodRequest;
-import main.ao.struct.interfaces.ActivationQueue;
+import main.ao.struct.interfaces.ActivationStruct;
 
+import java.util.PriorityQueue;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SynchronizedPriorityQueue extends ActivationQueue {
+public class SynchronizedPriorityQueue extends PriorityQueue<MethodRequest> implements ActivationStruct {
   private final ReentrantLock lock;
+  private final Condition cond;
 
   public SynchronizedPriorityQueue() {
     super();
     this.lock = new ReentrantLock(true);
+    this.cond = lock.newCondition();
   }
 
   @Override
-  public boolean add(MethodRequest methodRequest) {
+  public void putFront(MethodRequest methodRequest) {
     lock.lock();
     try {
-      return super.add(methodRequest);
+      super.add(methodRequest);
     } finally {
       lock.unlock();
     }
   }
 
   @Override
-  public MethodRequest poll() {
+  public void putBack(MethodRequest request) {
+
+  }
+
+  @Override
+  public void removeFirst() {
+
+  }
+
+  @Override
+  public void removeLast() {
+
+  }
+
+  @Override
+  public MethodRequest getFirst() {
     lock.lock();
     try {
       return super.poll();
@@ -34,7 +53,7 @@ public class SynchronizedPriorityQueue extends ActivationQueue {
   }
 
   @Override
-  public MethodRequest peek() {
+  public MethodRequest peekFirst() {
     lock.lock();
     try {
       return super.peek();
@@ -52,4 +71,17 @@ public class SynchronizedPriorityQueue extends ActivationQueue {
       lock.unlock();
     }
   }
+
+  @Override
+  public void cancelAll() {
+    lock.lock();
+    try {
+      super.clear();
+    } finally {
+      lock.unlock();
+    }
+  }
+
+
+
 }

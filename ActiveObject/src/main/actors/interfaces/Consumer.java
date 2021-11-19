@@ -19,7 +19,7 @@ abstract public class Consumer extends Actor {
   public void take(final int n) {
     System.out.println("TAKE");
     Promise<Object[]> promise = buffer.take(n);
-    while (promise.isNotConsumed()) {
+    while (active && promise.isNotConsumed()) {
 //      System.out.println("Running extra work in Consumer");
       extraWork.run();
     }

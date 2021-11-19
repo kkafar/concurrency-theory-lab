@@ -6,35 +6,29 @@ import main.ao.server.methodrequest.interfaces.MethodRequest;
 import main.ao.server.servant.interfaces.Servant;
 import main.buffer.interfaces.BoundedSizeBufferWithOpsLimit;
 import main.buffer.interfaces.BoundedBufferWithOpsLimitFactory;
+import main.buffer.interfaces.Buffer;
 import main.buffer.interfaces.BufferOpsLimitReachedListener;
 
-public class BufferServant extends BoundedSizeBufferWithOpsLimit implements BufferOpsLimitReachedListener {
+import java.util.LinkedList;
+import java.util.List;
+
+public class BufferServant extends Buffer implements BufferOpsLimitReachedListener {
   private final BoundedSizeBufferWithOpsLimit buffer;
+  private final List<BufferOpsLimitReachedListener> listeners;
 
 
   public BufferServant(final int bufferSize, final long maxOperations, BoundedBufferWithOpsLimitFactory bufferFactory) {
-    super(bufferSize, maxOperations);
     buffer = bufferFactory.create(bufferSize, maxOperations, true);
     buffer.registerBufferOpsLimitReachedListener(this);
+    listeners = new LinkedList<>();
   }
 
   public boolean put(Object[] portion) {
-    System.out.println();
-    if (!operationLimitReached) {
-      buffer.put(portion);
-      ++completedOperations;
-      return true;
-    }
-    return false;
+    return buffer.put(portion);
   }
 
   public Object[] take(int portionSize) {
-    if (!operationLimitReached) {
-      ++completedOperations;
-      return buffer.take(portionSize);
-    } else {
-      return null;
-    }
+    return buffer.take(portionSize);
   }
 
   @Override
@@ -48,8 +42,16 @@ public class BufferServant extends BoundedSizeBufferWithOpsLimit implements Buff
   }
 
   @Override
+  public int getSize() {
+    return buffer.getSize();
+  }
+
+  public void addListener(BufferOpsLimitReachedListener listener) {
+    listeners.add(listener);
+  }
+
+  @Override
   public void notifyOnOpsLimitReached() {
-    block();
-    System.out.println("Operations completed on BufferServant");
+    listeners.forEach(listener -> listener.notifyOnOpsLimitReached());
   }
 }

@@ -12,7 +12,7 @@ public class Main {
   private static final int N_PRODUCERS = 2;
   private static final long RNG_SEED = 10;
   private static final int BUFFER_SIZE = 10;
-  private static final long MAX_OPS = 5;
+  private static final long MAX_OPS = 5000;
 
   public static void main(String[] args) throws InterruptedException {
     testCase();
@@ -31,6 +31,7 @@ public class Main {
           bufferProxy,
           RNG_SEED
       );
+      consumers[i].setName("Consumer " + i);
     }
 
     for (int i = 0; i < N_PRODUCERS; ++i) {
@@ -38,6 +39,7 @@ public class Main {
           bufferProxy,
           RNG_SEED
       );
+      producers[i].setName("Producer " + i);
     }
 
     for (int i = 0; i < N_CONSUMERS; ++i) {

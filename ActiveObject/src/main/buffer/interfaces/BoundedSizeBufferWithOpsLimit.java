@@ -32,6 +32,6 @@ abstract public class BoundedSizeBufferWithOpsLimit extends BoundedBuffer {
   }
 
   public void notifyOnOpsLimitReached() {
-    listeners.forEach(BufferOpsLimitReachedListener::notifyOnOpsLimitReached);
+//    listeners.forEach(BufferOpsLimitReachedListener::notifyOnOpsLimitReached);
   }
 }

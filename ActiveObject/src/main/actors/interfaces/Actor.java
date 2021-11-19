@@ -13,9 +13,9 @@ abstract public class Actor extends Thread {
   protected final int maxPortionSize;
   protected final int minPortionSize;
 
-  protected final UnitOfWork extraWork = new UnitOfWork(5);
+  protected final UnitOfWork extraWork = new UnitOfWork(50000);
 
-  protected boolean active;
+  volatile protected boolean active;
   protected long completedOperations;
 
   protected BufferProxy buffer;

@@ -28,9 +28,13 @@ abstract public class MethodRequest<T> implements Comparable<MethodRequest<T>> {
     ++priority;
   }
 
-  abstract public void call();
+  abstract public boolean call();
 
   abstract public boolean guard();
+
+  public void cancel() {
+    promise.reject();
+  }
 
   @Override
   public int compareTo(MethodRequest<T> methodRequest) {
