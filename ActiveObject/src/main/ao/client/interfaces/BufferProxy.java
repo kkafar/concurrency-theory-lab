@@ -6,6 +6,4 @@ import main.buffer.interfaces.Buffer;
 public interface BufferProxy extends Buffer<Object, Promise<Boolean>, Promise<Object[]>> {
   Promise<Boolean> put(Object[] portion);
   Promise<Object[]> take(final int portionSize);
-
-  int getSize();
 }
