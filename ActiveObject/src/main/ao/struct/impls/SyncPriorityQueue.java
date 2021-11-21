@@ -7,11 +7,11 @@ import java.util.PriorityQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SynchronizedPriorityQueue extends PriorityQueue<MethodRequest> implements ActivationStruct {
+public class SyncPriorityQueue extends PriorityQueue<MethodRequest> implements ActivationStruct {
   private final ReentrantLock lock;
   private final Condition cond;
 
-  public SynchronizedPriorityQueue() {
+  public SyncPriorityQueue() {
     super();
     this.lock = new ReentrantLock(true);
     this.cond = lock.newCondition();

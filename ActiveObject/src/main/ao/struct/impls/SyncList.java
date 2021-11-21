@@ -7,14 +7,14 @@ import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class SynchronizedList implements ActivationStruct {
+public class SyncList implements ActivationStruct {
   private final LinkedList<MethodRequest> requests;
   private final ReentrantLock lock;
   private final Condition emptyList;
 
   private boolean cancelled;
 
-  public SynchronizedList() {
+  public SyncList() {
     requests = new LinkedList<>();
     lock = new ReentrantLock(true);
     emptyList = lock.newCondition();

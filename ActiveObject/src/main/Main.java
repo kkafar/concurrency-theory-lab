@@ -1,5 +1,6 @@
 package main;
 
+import main.actors.impls.MaximumPortionConsumer;
 import main.actors.impls.RandomPortionConsumer;
 import main.actors.impls.RandomPortionProducer;
 import main.actors.interfaces.Consumer;
@@ -27,7 +28,7 @@ public class Main {
     Producer[] producers = new Producer[N_PRODUCERS];
 
     for (int i = 0; i < N_CONSUMERS; ++i) {
-      consumers[i] = new RandomPortionConsumer(
+      consumers[i] = new MaximumPortionConsumer(
           bufferProxy,
           RNG_SEED
       );

@@ -1,9 +1,8 @@
 package main.actors.interfaces;
 
 import main.ao.client.interfaces.BufferProxy;
-import main.ao.struct.impls.Promise;
-import main.buffer.interfaces.BoundedSizeBufferWithOpsLimit;
-import main.utils.UnitOfWork;
+import main.ao.struct.impls.UnsyncPromise;
+
 import java.util.Arrays;
 
 abstract public class Producer extends Actor {
@@ -23,7 +22,7 @@ abstract public class Producer extends Actor {
 
   public void put(Object[] objects) {
     System.out.println("PUT");
-    Promise<Boolean> promise = buffer.put(objects);
+    UnsyncPromise<Boolean> promise = buffer.put(objects);
     while (active && promise.isNotConsumed()) {
 //      System.out.println("Running extra work in Producer");
       extraWork.run();

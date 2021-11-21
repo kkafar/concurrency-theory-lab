@@ -1,23 +1,23 @@
 package main.ao.server.methodrequest.interfaces;
 
 import main.ao.server.servant.impls.BufferServant;
-import main.ao.struct.impls.Promise;
+import main.ao.struct.impls.UnsyncPromise;
 
 abstract public class MethodRequest<T> implements Comparable<MethodRequest<T>> {
-  protected Promise<T> promise;
+  protected UnsyncPromise<T> promise;
 
   protected int priority;
 
   protected final BufferServant bufferServant;
 
-  public MethodRequest(BufferServant bufferServant, Promise<T> promise) {
+  public MethodRequest(BufferServant bufferServant, UnsyncPromise<T> promise) {
     System.out.println("MethodRequest instance created");
     this.priority = 1; // TODO
     this.promise = promise;
     this.bufferServant = bufferServant;
   }
 
-  public Promise<T> getPromise() {
+  public UnsyncPromise<T> getPromise() {
     return promise;
   }
 

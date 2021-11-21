@@ -2,12 +2,12 @@ package main.ao.server.methodrequest.impls;
 
 import main.ao.server.methodrequest.interfaces.MethodRequest;
 import main.ao.server.servant.impls.BufferServant;
-import main.ao.struct.impls.Promise;
+import main.ao.struct.impls.UnsyncPromise;
 
 public class TakeRequest extends MethodRequest<Object[]> {
   private final int portionSize;
 
-  public TakeRequest(int portionSize, BufferServant bufferServant, Promise<Object[]> promise) {
+  public TakeRequest(int portionSize, BufferServant bufferServant, UnsyncPromise<Object[]> promise) {
     super(bufferServant, promise);
     this.portionSize = portionSize;
   }

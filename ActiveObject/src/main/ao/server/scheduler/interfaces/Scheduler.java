@@ -1,9 +1,6 @@
 package main.ao.server.scheduler.interfaces;
 
-import main.ao.server.methodrequest.impls.PutRequest;
 import main.ao.server.methodrequest.interfaces.MethodRequest;
-import main.ao.struct.impls.SynchronizedPriorityQueue;
-import main.ao.struct.interfaces.ActivationStruct;
 
 abstract public class Scheduler extends Thread {
   protected volatile boolean active;

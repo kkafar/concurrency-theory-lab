@@ -6,11 +6,11 @@ import main.ao.struct.interfaces.ActivationStruct;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class NonSynchronizedList implements ActivationStruct {
+public class UnsyncList implements ActivationStruct {
   private final LinkedList<MethodRequest> requests;
   private boolean cancelled;
 
-  public NonSynchronizedList() {
+  public UnsyncList() {
     requests = new LinkedList<>();
     cancelled = false;
   }

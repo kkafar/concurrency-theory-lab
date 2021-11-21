@@ -1,18 +1,11 @@
 package main.ao.struct.impls;
 
-import java.util.concurrent.locks.ReentrantLock;
+import main.ao.struct.interfaces.Promise;
 
-public class Promise<T> {
-  private T value;
-  private boolean isResolved;
-  private boolean isRejected;
 
-  public Promise() {
-    this.value = null;
-    this.isResolved = false;
-    this.isRejected = false;
-  }
-  
+
+public class UnsyncPromise<T> extends Promise<T> {
+  @Override
   public void resolve(T value) {
     if (isNotConsumed()) {
       this.value = value;
@@ -22,6 +15,7 @@ public class Promise<T> {
     }
   }
 
+  @Override
   public void reject() {
     if (isNotConsumed()) {
       isRejected = true;
@@ -30,25 +24,30 @@ public class Promise<T> {
     }
   }
 
+  @Override
   public T getValue() {
       if (isResolved) {
         return value;
-      }
+     }
       return null;
   }
 
+  @Override
   public boolean isNotConsumed() {
     return !isResolved && !isRejected;
   }
 
+  @Override
   public boolean isConsumed() {
     return isRejected || isResolved;
   }
 
+  @Override
   public boolean isRejected() {
     return isRejected;
   }
 
+  @Override
   public boolean isResolved() {
     return isResolved;
   }

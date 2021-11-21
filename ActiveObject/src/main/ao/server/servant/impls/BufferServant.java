@@ -18,7 +18,7 @@ public class BufferServant extends Buffer implements BufferOpsLimitReachedListen
 
 
   public BufferServant(final int bufferSize, final long maxOperations, BoundedBufferWithOpsLimitFactory bufferFactory) {
-    buffer = bufferFactory.create(bufferSize, maxOperations, true);
+    buffer = bufferFactory.create(bufferSize, maxOperations, false);
     buffer.registerBufferOpsLimitReachedListener(this);
     listeners = new LinkedList<>();
   }

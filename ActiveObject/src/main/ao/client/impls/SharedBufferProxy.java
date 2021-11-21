@@ -6,7 +6,7 @@ import main.ao.server.methodrequest.impls.TakeRequest;
 import main.ao.server.scheduler.impls.StandardScheduler;
 import main.ao.server.scheduler.interfaces.Scheduler;
 import main.ao.server.servant.impls.BufferServant;
-import main.ao.struct.impls.Promise;
+import main.ao.struct.impls.UnsyncPromise;
 import main.buffer.impl.CyclicBuffer;
 import main.buffer.interfaces.BufferOpsLimitReachedListener;
 
@@ -23,16 +23,16 @@ public class SharedBufferProxy implements BufferProxy, BufferOpsLimitReachedList
   }
 
   @Override
-  public Promise<Boolean> put(Object[] portion) {
-    Promise<Boolean> promise = new Promise<>();
+  public UnsyncPromise<Boolean> put(Object[] portion) {
+    UnsyncPromise<Boolean> promise = new UnsyncPromise<>();
     PutRequest request = new PutRequest(portion, bufferServant, promise);
     scheduler.add(request);
     return promise;
   }
 
   @Override
-  public Promise<Object[]> take(int portionSize) {
-    Promise<Object[]> promise = new Promise<>();
+  public UnsyncPromise<Object[]> take(int portionSize) {
+    UnsyncPromise<Object[]> promise = new UnsyncPromise<>();
     TakeRequest request = new TakeRequest(portionSize, bufferServant, promise);
     scheduler.add(request);
     return promise;
