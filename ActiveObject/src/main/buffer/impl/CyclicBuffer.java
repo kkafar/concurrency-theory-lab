@@ -48,13 +48,13 @@ public final class CyclicBuffer
   }
 
   @Override
-  public boolean canPut(final int n) {
-    return size - occupiedCount >= n;
+  public boolean canPut(final int requestSize) {
+    return size - occupiedCount >= requestSize;
   }
 
   @Override
-  public boolean canTake(final int n) {
-    return occupiedCount >= n;
+  public boolean canTake(final int requestSize) {
+    return occupiedCount >= requestSize;
   }
 
   @Override

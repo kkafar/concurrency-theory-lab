@@ -39,13 +39,13 @@ public class BufferServant extends BoundedBufferWithOpsLimit implements Operatio
   }
 
   @Override
-  public boolean canTake(int portionSize) {
-    return buffer.canTake(portionSize);
+  public boolean canTake(int requestSize) {
+    return buffer.canTake(requestSize);
   }
 
   @Override
-  public boolean canPut(int portionSize) {
-    return buffer.canPut(portionSize);
+  public boolean canPut(int requestSize) {
+    return buffer.canPut(requestSize);
   }
 
   @Override
