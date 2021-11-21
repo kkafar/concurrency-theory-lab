@@ -1,8 +1,6 @@
 package main.actors.interfaces;
 
 import main.ao.client.interfaces.BufferProxy;
-import main.buffer.interfaces.BoundedSizeBufferWithOpsLimit;
-import main.buffer.interfaces.Buffer;
 import main.utils.UnitOfWork;
 
 import java.util.Random;

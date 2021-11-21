@@ -1,12 +1,11 @@
 package main;
 
 import main.actors.impls.MaximumPortionConsumer;
-import main.actors.impls.RandomPortionConsumer;
 import main.actors.impls.RandomPortionProducer;
 import main.actors.interfaces.Consumer;
 import main.actors.interfaces.Producer;
-import main.ao.client.impls.SharedBufferProxy;
-import main.buffer.interfaces.BoundedSizeBufferWithOpsLimit;
+import main.ao.client.impls.AsyncBuffer;
+import main.ao.struct.impls.UnsyncPromise;
 
 public class Main {
   private static final int N_CONSUMERS = 2;
@@ -20,9 +19,10 @@ public class Main {
   }
 
   private static void testCase() throws InterruptedException {
-    SharedBufferProxy bufferProxy = new SharedBufferProxy(
+    AsyncBuffer bufferProxy = new AsyncBuffer(
         BUFFER_SIZE,
-        MAX_OPS
+        MAX_OPS,
+        UnsyncPromise::new
     );
     Consumer[] consumers = new Consumer[N_CONSUMERS];
     Producer[] producers = new Producer[N_PRODUCERS];

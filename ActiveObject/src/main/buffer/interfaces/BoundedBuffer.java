@@ -7,11 +7,7 @@ abstract public class BoundedBuffer extends Buffer {
     size = bufferSize;
   }
 
-  /**
-   * Get maximum capacity of the buffer
-   *
-   * @return maximum capacity of the buffer
-   */
+  @Override
   public int getSize() {
     return size;
   }

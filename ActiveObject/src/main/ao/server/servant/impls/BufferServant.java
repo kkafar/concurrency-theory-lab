@@ -1,33 +1,41 @@
 package main.ao.server.servant.impls;
 
-import main.ao.server.methodrequest.impls.PutRequest;
-import main.ao.server.methodrequest.impls.TakeRequest;
-import main.ao.server.methodrequest.interfaces.MethodRequest;
-import main.ao.server.servant.interfaces.Servant;
-import main.buffer.interfaces.BoundedSizeBufferWithOpsLimit;
-import main.buffer.interfaces.BoundedBufferWithOpsLimitFactory;
-import main.buffer.interfaces.Buffer;
-import main.buffer.interfaces.BufferOpsLimitReachedListener;
+import main.buffer.interfaces.*;
 
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
-public class BufferServant extends Buffer implements BufferOpsLimitReachedListener {
-  private final BoundedSizeBufferWithOpsLimit buffer;
-  private final List<BufferOpsLimitReachedListener> listeners;
+public class BufferServant extends BoundedBufferWithOpsLimit implements OperationLimitReachedEventEmitter {
+  private final Buffer buffer;
+  private final Set<OperationLimitReachedEventListener> listeners;
 
 
-  public BufferServant(final int bufferSize, final long maxOperations, BoundedBufferWithOpsLimitFactory bufferFactory) {
-    buffer = bufferFactory.create(bufferSize, maxOperations, false);
-    buffer.registerBufferOpsLimitReachedListener(this);
-    listeners = new LinkedList<>();
+  public BufferServant(
+      final int bufferSize,
+      final long maxOperations,
+      final boolean log,
+      final BufferFactory bufferFactory) {
+    super(bufferSize, maxOperations);
+    buffer = bufferFactory.create(bufferSize, log);
+    listeners = new HashSet<>(1);
   }
 
+  @Override
   public boolean put(Object[] portion) {
+    if (isBlocked()) {
+      return false;
+    }
+    ++completedOperations;
     return buffer.put(portion);
   }
 
+  @Override
   public Object[] take(int portionSize) {
+    if (isBlocked()) {
+      return null;
+    }
+    ++completedOperations;
     return buffer.take(portionSize);
   }
 
@@ -42,16 +50,12 @@ public class BufferServant extends Buffer implements BufferOpsLimitReachedListen
   }
 
   @Override
-  public int getSize() {
-    return buffer.getSize();
-  }
-
-  public void addListener(BufferOpsLimitReachedListener listener) {
-    listeners.add(listener);
+  public boolean addOlrListener(OperationLimitReachedEventListener listener) {
+    return listeners.add(listener);
   }
 
   @Override
-  public void notifyOnOpsLimitReached() {
-    listeners.forEach(listener -> listener.notifyOnOpsLimitReached());
+  public boolean removeOlrListener(OperationLimitReachedEventListener listener) {
+    return listeners.remove(listener);
   }
 }

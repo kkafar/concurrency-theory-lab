@@ -2,12 +2,12 @@ package main.ao.server.methodrequest.impls;
 
 import main.ao.server.methodrequest.interfaces.MethodRequest;
 import main.ao.server.servant.impls.BufferServant;
-import main.ao.struct.impls.UnsyncPromise;
+import main.ao.struct.interfaces.Promise;
 
 public class PutRequest extends MethodRequest<Boolean> {
   private final Object[] portion;
 
-  public PutRequest(Object[] portion, BufferServant bufferServant, UnsyncPromise<Boolean> promise) {
+  public PutRequest(Object[] portion, BufferServant bufferServant, Promise<Boolean> promise) {
     super(bufferServant, promise);
     this.portion = portion;
   }

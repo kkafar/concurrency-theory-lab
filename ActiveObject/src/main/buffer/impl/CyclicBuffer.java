@@ -1,36 +1,31 @@
 package main.buffer.impl;
 
 import main.buffer.interfaces.BoundedBuffer;
-import main.buffer.interfaces.BoundedSizeBufferWithOpsLimit;
-import main.buffer.interfaces.Buffer;
 
 import java.util.Arrays;
 
-public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
+public final class CyclicBuffer
+    extends BoundedBuffer {
   private final Object[] buffer;
 
   private int firstEmptyIndex = 0;
   private int firstOccupiedIndex = 0;
   private int occupiedCount = 0;
 
-  public CyclicBuffer(final int size, final long maxOperations, boolean log) {
-    super(size, maxOperations);
+  public CyclicBuffer(final int size, boolean log) {
+    super(size);
     this.buffer = new Object[size];
     this.log = log;
     Arrays.fill(buffer, null);
   }
 
+  @Override
   public boolean put(Object[] objects) {
-//    if (completedOperations >= maxOperations) {
-//      block();
-//      return false;
-//    }
-    for (int i = 0; i < objects.length; ++i) {
-      buffer[firstEmptyIndex++] = objects[i];
+    for (Object object : objects) {
+      buffer[firstEmptyIndex++] = object;
       firstEmptyIndex %= size;
     }
     occupiedCount += objects.length;
-//    ++completedOperations;
     if (log)
       System.out.println(
           "P:" + objects.length + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + " " + this
@@ -38,11 +33,8 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
     return true;
   }
 
+  @Override
   public Object[] take(final int n) {
-//    if (completedOperations >= maxOperations) {
-//      block();
-//      return null;
-//    }
     Object[] retArray = new Object[n];
     for (int i = 0; i < n; ++i) {
       retArray[i] = buffer[firstOccupiedIndex];
@@ -50,24 +42,17 @@ public final class CyclicBuffer extends BoundedSizeBufferWithOpsLimit {
       firstOccupiedIndex %= size;
     }
     occupiedCount -= n;
-//    ++completedOperations;
     if (log)
       System.out.println("T:" + n + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + " " + this);
     return retArray;
   }
 
-//  public boolean canPut(final int n) {
-//    return size - occupiedCount >= n && !operationLimitReached;
-//  }
-
+  @Override
   public boolean canPut(final int n) {
     return size - occupiedCount >= n;
   }
 
-//  public boolean canTake(final int n) {
-//    return occupiedCount >= n && !operationLimitReached;
-//  }
-
+  @Override
   public boolean canTake(final int n) {
     return occupiedCount >= n;
   }

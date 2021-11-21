@@ -1,7 +1,7 @@
 package main.actors.interfaces;
 
-import main.buffer.interfaces.BoundedSizeBufferWithOpsLimit;
+import main.buffer.interfaces.BoundedBufferWithOpsLimit;
 
 public interface ProducerFactory {
-  Producer create(BoundedSizeBufferWithOpsLimit buffer, final long initialRngSeed);
+  Producer create(BoundedBufferWithOpsLimit buffer, final long initialRngSeed);
 }

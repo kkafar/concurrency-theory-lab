@@ -1,10 +1,10 @@
 package main.ao.client.interfaces;
 
-import main.ao.struct.impls.UnsyncPromise;
+import main.ao.struct.interfaces.Promise;
 
 public interface BufferProxy {
-  UnsyncPromise<Boolean> put(Object[] portion);
-  UnsyncPromise<Object[]> take(final int portionSize);
+  Promise<Boolean> put(Object[] portion);
+  Promise<Object[]> take(final int portionSize);
 
   int getSize();
 }

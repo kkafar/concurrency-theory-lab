@@ -45,7 +45,7 @@ public class StandardScheduler extends Scheduler {
 
   @Override
   public void add(MethodRequest methodRequest) {
-    System.out.println("Adding MethodRequest to ActivationStruct");
+//    System.out.println("Adding MethodRequest to ActivationStruct");
     freshList.putBack(methodRequest);
   }
 

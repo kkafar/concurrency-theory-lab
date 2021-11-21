@@ -9,5 +9,5 @@ public interface BoundedBufferWithOpsLimitFactory {
    * @param log true if internal information should be logged
    * @return buffer instance
    */
-  BoundedSizeBufferWithOpsLimit create(final int bufferSize, final long actions,  boolean log);
+  BoundedBufferWithOpsLimit create(final int bufferSize, final long actions, boolean log);
 }

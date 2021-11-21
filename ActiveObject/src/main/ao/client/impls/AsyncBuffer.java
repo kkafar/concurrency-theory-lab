@@ -6,15 +6,18 @@ import main.ao.server.methodrequest.impls.TakeRequest;
 import main.ao.server.scheduler.impls.StandardScheduler;
 import main.ao.server.scheduler.interfaces.Scheduler;
 import main.ao.server.servant.impls.BufferServant;
-import main.ao.struct.impls.UnsyncPromise;
+import main.ao.struct.interfaces.Promise;
+import main.ao.struct.interfaces.PromiseFactory;
 import main.buffer.impl.CyclicBuffer;
-import main.buffer.interfaces.BufferOpsLimitReachedListener;
+import main.buffer.interfaces.OperationLimitReachedEventListener;
 
-public class SharedBufferProxy implements BufferProxy, BufferOpsLimitReachedListener {
+public class AsyncBuffer {
   private final Scheduler scheduler;
   private final BufferServant bufferServant;
+  private final PromiseFactory promiseFactory;
 
-  public SharedBufferProxy(final int bufferSize, final long maxOperations) {
+  public AsyncBuffer(final int bufferSize, final long maxOperations, PromiseFactory promiseFactory) {
+    this.promiseFactory = promiseFactory;
     bufferServant = new BufferServant(bufferSize, maxOperations, CyclicBuffer::new);
     bufferServant.addListener(this);
     scheduler = new StandardScheduler();
@@ -23,16 +26,16 @@ public class SharedBufferProxy implements BufferProxy, BufferOpsLimitReachedList
   }
 
   @Override
-  public UnsyncPromise<Boolean> put(Object[] portion) {
-    UnsyncPromise<Boolean> promise = new UnsyncPromise<>();
+  public Promise<Boolean> put(Object[] portion) {
+    Promise<Boolean> promise = promiseFactory.create();
     PutRequest request = new PutRequest(portion, bufferServant, promise);
     scheduler.add(request);
     return promise;
   }
 
   @Override
-  public UnsyncPromise<Object[]> take(int portionSize) {
-    UnsyncPromise<Object[]> promise = new UnsyncPromise<>();
+  public Promise<Object[]> take(int portionSize) {
+    Promise<Object[]> promise = promiseFactory.create();
     TakeRequest request = new TakeRequest(portionSize, bufferServant, promise);
     scheduler.add(request);
     return promise;

@@ -24,7 +24,6 @@ abstract public class Buffer {
    */
   abstract public Object[] take(final int portionSize);
 
-
   /**
    * Decide whether internal information should be logged
    *
@@ -50,5 +49,10 @@ abstract public class Buffer {
    */
   abstract public boolean canPut(final int portionSize);
 
+  /**
+   * Returns maximal capacity of the buffer
+   *
+   * @return maximal capacity of the buffer
+   */
   abstract public int getSize();
 }
