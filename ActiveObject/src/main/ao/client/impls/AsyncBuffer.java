@@ -9,17 +9,18 @@ import main.ao.server.servant.impls.BufferServant;
 import main.ao.struct.interfaces.Promise;
 import main.ao.struct.interfaces.PromiseFactory;
 import main.buffer.impl.CyclicBuffer;
-import main.buffer.interfaces.OperationLimitReachedEventListener;
 
-public class AsyncBuffer {
+public class AsyncBuffer implements BufferProxy {
   private final Scheduler scheduler;
   private final BufferServant bufferServant;
   private final PromiseFactory promiseFactory;
 
-  public AsyncBuffer(final int bufferSize, final long maxOperations, PromiseFactory promiseFactory) {
+  public AsyncBuffer(final int bufferSize,
+                     final long maxOperations,
+                     final PromiseFactory promiseFactory,
+                     final boolean log) {
     this.promiseFactory = promiseFactory;
-    bufferServant = new BufferServant(bufferSize, maxOperations, CyclicBuffer::new);
-    bufferServant.addListener(this);
+    bufferServant = new BufferServant(bufferSize, maxOperations, CyclicBuffer::new, log);
     scheduler = new StandardScheduler();
     scheduler.setName("Scheduler Thread");
     scheduler.start();
@@ -48,10 +49,5 @@ public class AsyncBuffer {
   @Override
   public int getSize() {
     return bufferServant.getSize();
-  }
-
-  @Override
-  public void notifyOnOpsLimitReached() {
-//    scheduler.deactivate();
   }
 }
