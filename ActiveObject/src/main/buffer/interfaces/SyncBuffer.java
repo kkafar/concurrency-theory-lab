@@ -1,6 +1,6 @@
 package main.buffer.interfaces;
 
-abstract public class Buffer {
+abstract public class SyncBuffer {
   protected boolean log = false;
 
   /**

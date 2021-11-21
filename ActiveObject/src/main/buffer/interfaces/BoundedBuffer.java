@@ -1,6 +1,6 @@
 package main.buffer.interfaces;
 
-abstract public class BoundedBuffer extends Buffer {
+abstract public class BoundedBuffer extends SyncBuffer {
   protected final int size;
 
   public BoundedBuffer(final int bufferSize) {

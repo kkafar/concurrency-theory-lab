@@ -3,11 +3,10 @@ package main.ao.server.servant.impls;
 import main.buffer.interfaces.*;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 public class BufferServant extends BoundedBufferWithOpsLimit implements OperationLimitReachedEventEmitter {
-  private final Buffer buffer;
+  private final SyncBuffer buffer;
   private final Set<OperationLimitReachedEventListener> listeners;
 
 

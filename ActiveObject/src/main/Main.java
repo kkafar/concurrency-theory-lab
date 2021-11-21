@@ -22,7 +22,8 @@ public class Main {
     AsyncBuffer bufferProxy = new AsyncBuffer(
         BUFFER_SIZE,
         MAX_OPS,
-        UnsyncPromise::new
+        UnsyncPromise::new,
+        true
     );
     Consumer[] consumers = new Consumer[N_CONSUMERS];
     Producer[] producers = new Producer[N_PRODUCERS];
