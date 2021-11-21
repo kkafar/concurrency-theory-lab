@@ -1,10 +1,10 @@
 package main.actors.interfaces;
 
-import main.ao.client.interfaces.BufferProxy;
 import main.ao.struct.interfaces.Promise;
+import main.buffer.interfaces.Buffer;
 
 abstract public class Consumer extends Actor {
-  public Consumer(BufferProxy buffer, long initialRngSeed) {
+  public Consumer(Buffer buffer, long initialRngSeed) {
     super(buffer, initialRngSeed);
   }
 
@@ -15,17 +15,5 @@ abstract public class Consumer extends Actor {
     }
   }
 
-  public void take(final int n) {
-//    System.out.println("TAKE");
-    Promise<Object[]> promise = buffer.take(n);
-    while (active && promise.isNotConsumed()) {
-      extraWork.run();
-    }
-    if (promise.isResolved()) {
-    } else if (promise.isRejected()) {
-      deactivate();
-    } else {
-    }
-    if (active) ++completedOperations;
-  }
+  abstract public void take(final int requestSize);
 }

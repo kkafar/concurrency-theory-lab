@@ -1,6 +1,6 @@
 package main.actors.interfaces;
 
-import main.ao.client.interfaces.BufferProxy;
+import main.buffer.interfaces.Buffer;
 import main.utils.UnitOfWork;
 
 import java.util.Random;
@@ -16,9 +16,9 @@ abstract public class Actor extends Thread {
   volatile protected boolean active;
   protected long completedOperations;
 
-  protected BufferProxy buffer;
+  protected Buffer buffer;
 
-  public Actor(BufferProxy buffer, final long initialRngSeed) {
+  public Actor(Buffer buffer, final long initialRngSeed) {
     this.buffer = buffer;
     this.initialRngSeed = initialRngSeed;
     this.rng = new Random(initialRngSeed);
