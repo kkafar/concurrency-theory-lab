@@ -1,5 +1,5 @@
 package main.buffer.interfaces;
 
-public interface BufferFactory {
+public interface SyncBufferFactory {
   SyncBuffer create(final int size, final boolean log);
 }
