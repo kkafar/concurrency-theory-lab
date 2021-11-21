@@ -5,6 +5,10 @@ import main.ao.struct.interfaces.Promise;
 
 
 public class UnsyncPromise<T> extends Promise<T> {
+  public UnsyncPromise() {
+    super();
+  }
+
   @Override
   public void resolve(T value) {
     if (isNotConsumed()) {
