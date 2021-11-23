@@ -22,16 +22,18 @@ public class StandardScheduler extends Scheduler {
   protected void dispatch() {
     if (!awaitingList.isEmpty()) {
       if (awaitingList.peekFirst().guard()) { // first top
+        System.out.println("Executing from awaitingList");
         awaitingList.getFirst().call();
       } else {
-        while (!awaitingList.peekFirst().guard()) { // we cant execute first from awaitingList
+        do {
           request = freshList.getFirst();           // ==> take care of freshList
           if (request.guard()) {
+            System.out.println("Executing from freshList 1");
             request.call();
           } else {
             awaitingList.putBack(request);          //  we do not need to synchronize! awaitingList is accessed
           }                                         // only from Scheduler Thread!
-        }
+        } while (!awaitingList.peekFirst().guard());
       }
     } else {
       request = freshList.getFirst();
@@ -39,6 +41,7 @@ public class StandardScheduler extends Scheduler {
         awaitingList.putFront(request);
         request = freshList.getFirst();
       }
+      System.out.println("Executing from freshList 2");
       request.call();
     }
   }

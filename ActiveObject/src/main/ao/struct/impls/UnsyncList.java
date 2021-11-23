@@ -22,16 +22,19 @@ public class UnsyncList implements ActivationStruct {
 
   @Override
   public void putBack(MethodRequest request) {
+    System.out.println("PutBack in awaitingList");
     requests.addLast(request);
   }
 
   @Override
   public MethodRequest peekFirst() {
+    System.out.println("PeekFirst in awaitingList");
     return requests.peekFirst();
   }
 
   @Override
   public MethodRequest getFirst() {
+    System.out.println("GetFirst in awaitingList");
     return requests.pollFirst();
   }
 

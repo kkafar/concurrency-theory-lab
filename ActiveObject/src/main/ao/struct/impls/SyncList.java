@@ -34,6 +34,7 @@ public class SyncList implements ActivationStruct {
   @Override
   public void putBack(MethodRequest request) {
 //    if (cancelled) return;
+    System.out.println("PutBack in freshList");
     lock.lock();
     try {
       requests.addLast(request);
@@ -65,7 +66,7 @@ public class SyncList implements ActivationStruct {
 
   @Override
   public MethodRequest peekFirst() {
-//    if (cancelled) return null;
+    System.out.println("Peeking first in freshList");
     lock.lock();
     try {
       return requests.peekFirst();
@@ -76,7 +77,7 @@ public class SyncList implements ActivationStruct {
 
   @Override
   public MethodRequest getFirst() {
-//    if (cancelled) return null;
+    System.out.println("Get first in freshList");
     lock.lock();
     try {
       MethodRequest ret = requests.pollFirst();

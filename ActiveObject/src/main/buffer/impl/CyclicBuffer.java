@@ -21,40 +21,54 @@ public final class CyclicBuffer
 
   @Override
   public boolean put(Object[] objects) {
+    assert canPut(objects.length) : "canPut:" + objects.length + " (entry)";
+    assertState();
+
     for (Object object : objects) {
       buffer[firstEmptyIndex++] = object;
       firstEmptyIndex %= size;
     }
     occupiedCount += objects.length;
-    if (log)
+    if (log) {
       System.out.println(
-          "P:" + objects.length + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + " " + this
+          "P:" + objects.length + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + ":" + occupiedCount + " " + this
       );
+      System.out.flush();
+    }
+    assert canPut(objects.length) : "canPut: " + objects.length + " (exit)";
+    assertState();
     return true;
   }
 
   @Override
-  public Object[] take(final int n) {
-    Object[] retArray = new Object[n];
-    for (int i = 0; i < n; ++i) {
+  public Object[] take(final int requestSize) {
+    assert canTake(requestSize) : "canTake: " + requestSize + " (entry)";
+    assertState();
+
+    Object[] retArray = new Object[requestSize];
+    for (int i = 0; i < requestSize; ++i) {
       retArray[i] = buffer[firstOccupiedIndex];
       buffer[firstOccupiedIndex++] = null;
       firstOccupiedIndex %= size;
     }
-    occupiedCount -= n;
-    if (log)
-      System.out.println("T:" + n + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + " " + this);
+    occupiedCount -= requestSize;
+    if (log) {
+      System.out.println("T:" + requestSize + ":" + firstOccupiedIndex + ":" + firstEmptyIndex + ":" + occupiedCount + " " + this);
+    }
+    System.out.flush();
+    assert canTake(requestSize) : "canTake: " + requestSize + " (exit)";
+    assertState();
     return retArray;
   }
 
   @Override
-  public boolean canPut(final int n) {
-    return size - occupiedCount >= n;
+  public boolean canPut(final int requestSize) {
+    return size - occupiedCount >= requestSize;
   }
 
   @Override
-  public boolean canTake(final int n) {
-    return occupiedCount >= n;
+  public boolean canTake(final int requestSize) {
+    return occupiedCount >= requestSize;
   }
 
   @Override
@@ -65,5 +79,10 @@ public final class CyclicBuffer
       else stringBuilder.append('_');
     }
     return stringBuilder.append(']').toString();
+  }
+
+  private void assertState() {
+    assert occupiedCount < size : "occupiedCount >= size";
+    assert occupiedCount >= 0 : "occupiedCount < 0";
   }
 }
