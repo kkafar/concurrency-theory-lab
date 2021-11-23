@@ -1,7 +1,8 @@
 package main.actors.interfaces;
 
+import main.ao.client.interfaces.BufferProxy;
 import main.buffer.interfaces.BoundedBufferWithOpsLimit;
 
 public interface ProducerFactory {
-  Producer create(BoundedBufferWithOpsLimit buffer, final long initialRngSeed);
+  Producer create(BufferProxy buffer, final long initialRngSeed);
 }

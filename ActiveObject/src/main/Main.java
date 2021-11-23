@@ -1,67 +1,138 @@
 package main;
 
 import main.actors.impls.MaximumPortionConsumer;
+import main.actors.impls.MinimalPortionConsumer;
+import main.actors.impls.MaximumPortionProducer;
+import main.actors.impls.MinimalPortionProducer;
+import main.actors.impls.RandomPortionConsumer;
 import main.actors.impls.RandomPortionProducer;
-import main.actors.interfaces.Consumer;
-import main.actors.interfaces.Producer;
+import main.actors.interfaces.ConsumerFactory;
+import main.actors.interfaces.ProducerFactory;
+
 import main.ao.client.impls.AsyncBuffer;
-import main.ao.struct.impls.UnsyncPromise;
+import main.ao.client.interfaces.BufferProxyFactory;
+
+import main.experiment.Experiment;
+import main.experiment.analyzer.ExperimentResultAnalyzer;
+import main.experiment.task.StandardTask;
+import main.experiment.task.StandardTaskConfiguration;
+import main.experiment.task.TaskConfiguration;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Main {
-  private static final int N_CONSUMERS = 2;
-  private static final int N_PRODUCERS = 2;
-  private static final long RNG_SEED = 10;
-  private static final int BUFFER_SIZE = 10;
-  private static final long MAX_OPS = 5000;
+  private static final int N_REPEATS = 10;
+  private static final int RNG_SEED = 10;
 
-  public static void main(String[] args) throws InterruptedException {
-    testCase();
+  private static final String LOG_FILE_PATH = "/home/kkafara/studies/cs/5_term/twsp/lab/ActiveObject/data/temp";
+
+//  private static final int[] N_PRODUCERS_ARR = {
+//      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+//  };
+//
+//  private static final int[] N_CONSUMERS_ARR = {
+//      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+//  };
+
+  private static final int[] N_PRODUCERS_ARR = {
+      1, 4, 7, 10
+  };
+
+  private static final int[] N_CONSUMERS_ARR = {
+      1, 4, 7, 10
+  };
+
+//  private static final int[] BUFFER_SIZE_ARR = {
+//      5, 10, 15, 20, 25, 30, 35, 40, 45, 50
+//  };
+
+  private static final int[] BUFFER_SIZE_ARR = {
+      10
+  };
+
+//  private static final int[] BUFFER_OPS_ARR = {
+//      10000, 50000, 100000, 150000, 200000, 250000
+//  };
+
+  private static final int[] BUFFER_OPS_ARR = {
+      200000
+  };
+
+  private static final ConsumerFactory[] CONSUMER_FACTORY_ARR = {
+      RandomPortionConsumer::new,
+      MinimalPortionConsumer::new,
+      MaximumPortionConsumer::new
+  };
+
+  private static final ProducerFactory[] PRODUCER_FACTORY_ARR = {
+      RandomPortionProducer::new,
+      MinimalPortionProducer::new,
+      MaximumPortionProducer::new
+  };
+
+  private static final BufferProxyFactory[] BUFFER_FACTORY_ARR = {
+      AsyncBuffer::new
+  };
+
+  public static void main(String[] args) throws InterruptedException, IOException {
+    conductExperiments(getExperiments(getTaskConfigurations()));
   }
 
-  private static void testCase() throws InterruptedException {
-    AsyncBuffer bufferProxy = new AsyncBuffer(
-        BUFFER_SIZE,
-        MAX_OPS,
-        UnsyncPromise::new,
-        true
-    );
-    Consumer[] consumers = new Consumer[N_CONSUMERS];
-    Producer[] producers = new Producer[N_PRODUCERS];
-
-    for (int i = 0; i < N_CONSUMERS; ++i) {
-      consumers[i] = new MaximumPortionConsumer(
-          bufferProxy,
-          RNG_SEED
-      );
-      consumers[i].setName("Consumer " + i);
+  private static List<TaskConfiguration> getTaskConfigurations() {
+    List<TaskConfiguration> taskConfigurations = new LinkedList<>();
+    for (int nProd : N_PRODUCERS_ARR) {
+      for (int nCons : N_CONSUMERS_ARR) {
+        for (int bufSize : BUFFER_SIZE_ARR) {
+          for (int bufOps : BUFFER_OPS_ARR) {
+            taskConfigurations.add(new StandardTaskConfiguration(
+                "TASK DESCRIPTION",
+                nProd,
+                nCons,
+                bufSize,
+                bufOps
+            ));
+          }
+        }
+      }
     }
+    return taskConfigurations;
+  }
 
-    for (int i = 0; i < N_PRODUCERS; ++i) {
-      producers[i] = new RandomPortionProducer(
-          bufferProxy,
-          RNG_SEED
-      );
-      producers[i].setName("Producer " + i);
+  private static List<Experiment> getExperiments(List<TaskConfiguration> taskConfigurations) {
+    List<Experiment> experiments = new LinkedList<>();
+    Experiment experiment;
+    for (ConsumerFactory consumerFactory : CONSUMER_FACTORY_ARR) {
+      for (ProducerFactory producerFactory : PRODUCER_FACTORY_ARR) {
+        for (BufferProxyFactory bufferFactory : BUFFER_FACTORY_ARR) {
+          experiment = new Experiment(
+              bufferFactory,
+              producerFactory,
+              consumerFactory,
+              StandardTask::new,
+              RNG_SEED,
+              N_REPEATS
+          );
+          experiment.registerAll(taskConfigurations);
+          experiments.add(experiment);
+        }
+      }
     }
+    return experiments;
+  }
 
-    for (int i = 0; i < N_CONSUMERS; ++i) {
-      consumers[i].start();
+  private static void conductExperiments(List<Experiment> experiments) throws IOException {
+    ExperimentResultAnalyzer analyzer = new ExperimentResultAnalyzer();
+//    LogOptions logOptions = new LogOptionsBuilder()
+//        .logExperiment()
+//        .logInsideTask()
+//        .build();
+    for (Experiment experiment : experiments) {
+//      experiment.setLogOptions(logOptions);
+      experiment.conduct();
+//      analyzer.analyze(experiment.getResult());
+      analyzer.analyzeToFile(LOG_FILE_PATH, experiment.getResult());
     }
-
-    for (int i = 0; i < N_PRODUCERS; ++i) {
-      producers[i].start();
-    }
-
-
-    for (int i = 0; i < N_CONSUMERS; ++i) {
-      consumers[i].join();
-    }
-
-    for (int i = 0; i < N_PRODUCERS; ++i) {
-      producers[i].join();
-    }
-
-    bufferProxy.getScheduler().join();
-
   }
 }

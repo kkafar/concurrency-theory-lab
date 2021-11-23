@@ -1,10 +1,13 @@
 package main.experiment;
 
+import main.actors.impls.*;
 import main.actors.interfaces.Consumer;
 import main.actors.interfaces.ConsumerFactory;
 import main.actors.interfaces.Producer;
 import main.actors.interfaces.ProducerFactory;
-import main.buffer.interfaces.Buffer;
+import main.ao.client.interfaces.BufferProxy;
+import main.ao.client.interfaces.BufferProxyFactory;
+import main.ao.struct.impls.UnsyncPromise;
 import main.buffer.interfaces.BufferFactory;
 import main.experiment.result.ExperimentResult;
 import main.experiment.task.Task;
@@ -15,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Experiment {
-  private final BufferFactory bufferFactory;
+  private final BufferProxyFactory bufferFactory;
   private final ProducerFactory producerFactory;
   private final ConsumerFactory consumerFactory;
   private final TaskFactory taskFactory;
@@ -25,11 +28,10 @@ public class Experiment {
 
   private final ArrayList<Task> taskList;
 
-  private Buffer buffer;
-  private LogOptions logOptions = null;
+  private BufferProxy buffer;
 
   public Experiment(
-      final BufferFactory bufferFactory,
+      final BufferProxyFactory bufferFactory,
       final ProducerFactory producerFactory,
       final ConsumerFactory consumerFactory,
       final TaskFactory taskFactory,
@@ -80,21 +82,14 @@ public class Experiment {
     });
   }
 
-  public void setLogOptions(LogOptions logOptions) {
-    this.logOptions = logOptions;
-  }
-
   public String toString() {
     StringBuilder stringBuilder = new StringBuilder();
-    Buffer mockBuffer = bufferFactory.create(10, 10, false);
-
-    if (mockBuffer instanceof FourCondsBufferProxy) {
-      stringBuilder.append("Buffer: FourCondsBufferProxy\n");
-    } else if (mockBuffer instanceof ThreeLocksBufferProxy) {
-      stringBuilder.append("Buffer: ThreeLocksBufferProxy\n");
-    } else {
-      stringBuilder.append("Buffer: Unknown type\n");
-    }
+    BufferProxy mockBuffer = bufferFactory.create(
+        10,
+        10,
+        UnsyncPromise::new,
+        false
+    );
 
     Producer producer = producerFactory.create(mockBuffer, 10);
     if (producer instanceof RandomPortionProducer) {
@@ -144,11 +139,7 @@ public class Experiment {
    */
   public void conduct() {
     experimentResult.addExperimentDescription(toString());
-    if (logOptions != null && logOptions.contains(LogOptions.LOG_EXPERIMENT)) {
-      System.out.println(this);
-    }
     taskList.forEach(task -> {
-      task.setLogOptions(logOptions);
       try {
         task.run();
         experimentResult.addTaskResult(task.getResult());

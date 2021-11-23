@@ -2,7 +2,7 @@ package main.experiment.task;
 
 import main.actors.interfaces.ConsumerFactory;
 import main.actors.interfaces.ProducerFactory;
-import main.buffer.interfaces.BufferFactory;
+import main.ao.client.interfaces.BufferProxyFactory;
 
 public interface TaskFactory {
   /**
@@ -13,7 +13,7 @@ public interface TaskFactory {
    * @param numberOfConsumers number of consumers actors that should be started
    * @param producerFactory method returning instances of `Producer` abstract class
    * @param consumerFactory method returning instances of `Consumer` abstract class
-   * @param bufferFactory method returning instances of `Buffer` interface
+   * @param bufferFactory method returning instances of `BufferProxy` interface
    * @param bufferSize maximum size of the buffer shared between actors
    * @param bufferOperationsBound number of operations that should be executed on buffer
    * @param startingRngSeed initial seed for random number generator
@@ -26,7 +26,7 @@ public interface TaskFactory {
       final int numberOfConsumers,
       final ProducerFactory producerFactory,
       final ConsumerFactory consumerFactory,
-      final BufferFactory bufferFactory,
+      final BufferProxyFactory bufferFactory,
       final int bufferSize,
       final long bufferOperationsBound,
       final long startingRngSeed,
