@@ -30,13 +30,10 @@ abstract public class Producer extends Actor {
     }
     if (promise.isResolved()) {
       System.out.println("RESOLVED PRODUCER");
+      ++completedOperations;
     } else if (promise.isRejected()) {
       System.out.println("REJECTED PRODUCER");
       deactivate();
-    } else {
-      System.out.println("UNDEFINED PRODUCER");
     }
-    System.out.flush();
-    if (active) ++completedOperations;
   }
 }

@@ -14,8 +14,8 @@ public class TakeRequest extends MethodRequest<Object[]> {
 
   @Override
   public boolean call() {
-    System.out.println("TakeRequest call for portion: " + portionSize);
-    System.out.flush();
+//    System.out.println("TakeRequest call for portion: " + portionSize);
+//    System.out.flush();
     Object[] res = bufferServant.take(portionSize);
     if (res == null){
       promise.reject();
@@ -28,8 +28,7 @@ public class TakeRequest extends MethodRequest<Object[]> {
 
   @Override
   public boolean guard() {
-    boolean result = bufferServant.canTake(portionSize);
-    System.out.println("TakeRequest guard: " + result + " for portion: " + portionSize);
-    return result;
+    //    System.out.println("TakeRequest guard: " + result + " for portion: " + portionSize);
+    return bufferServant.canTake(portionSize);
   }
 }

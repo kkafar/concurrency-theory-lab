@@ -32,6 +32,7 @@ abstract public class Actor extends Thread {
   }
 
   public void deactivate() {
+    System.out.println("Actor deactivated");
     active = false;
   }
 

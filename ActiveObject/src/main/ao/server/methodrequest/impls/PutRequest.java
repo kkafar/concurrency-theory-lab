@@ -14,8 +14,8 @@ public class PutRequest extends MethodRequest<Boolean> {
 
   @Override
   public boolean call() {
-    System.out.println("PullRequest call for portion: " + portion.length);
-    System.out.flush();
+//    System.out.println("PullRequest call for portion: " + portion.length);
+//    System.out.flush();
     if (bufferServant.put(portion)) {
       promise.resolve(true);
       return true;
@@ -27,9 +27,8 @@ public class PutRequest extends MethodRequest<Boolean> {
 
   @Override
   public boolean guard() {
-    boolean result = bufferServant.canPut(portion.length);
-    System.out.println("PullRequest guard: " + result + " for portion: " + portion.length);
-    System.out.flush();
-    return result;
+    //    System.out.println("PullRequest guard: " + result + " for portion: " + portion.length);
+//    System.out.flush();
+    return bufferServant.canPut(portion.length);
   }
 }

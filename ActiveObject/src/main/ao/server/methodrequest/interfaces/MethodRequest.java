@@ -11,7 +11,7 @@ abstract public class MethodRequest<T> implements Comparable<MethodRequest<T>> {
   protected final BufferServant bufferServant;
 
   public MethodRequest(BufferServant bufferServant, Promise<T> promise) {
-    System.out.println("MethodRequest instance created");
+//    System.out.println("MethodRequest instance created");
     this.priority = 1; // TODO
     this.promise = promise;
     this.bufferServant = bufferServant;

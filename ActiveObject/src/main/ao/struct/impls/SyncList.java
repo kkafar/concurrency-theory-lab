@@ -33,8 +33,7 @@ public class SyncList implements ActivationStruct {
 
   @Override
   public void putBack(MethodRequest request) {
-//    if (cancelled) return;
-    System.out.println("PutBack in freshList");
+    if (cancelled) return;
     lock.lock();
     try {
       requests.addLast(request);
@@ -66,7 +65,6 @@ public class SyncList implements ActivationStruct {
 
   @Override
   public MethodRequest peekFirst() {
-    System.out.println("Peeking first in freshList");
     lock.lock();
     try {
       return requests.peekFirst();
@@ -77,12 +75,13 @@ public class SyncList implements ActivationStruct {
 
   @Override
   public MethodRequest getFirst() {
-    System.out.println("Get first in freshList");
     lock.lock();
     try {
       MethodRequest ret = requests.pollFirst();
-      while (ret == null) {
+      while (ret == null && !cancelled) {
+        System.out.println("Scheduler: before await");
         emptyList.await();
+        System.out.println("Scheduler: after await");
         ret = requests.pollFirst();
       }
       return ret;
@@ -109,12 +108,12 @@ public class SyncList implements ActivationStruct {
 
   @Override
   public void cancelAll() {
-//    if (cancelled) return;
+    if (cancelled) return;
     lock.lock();
     try {
-//      cancelled = true;
-//      requests.forEach(request -> request.getPromise().reject());
-//      requests.clear();
+      cancelled = true;
+      requests.forEach(request -> request.getPromise().reject());
+      requests.clear();
     } finally {
       emptyList.signalAll();
       lock.unlock();

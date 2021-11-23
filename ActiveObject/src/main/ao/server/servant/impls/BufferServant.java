@@ -26,8 +26,15 @@ public class BufferServant extends BoundedBufferWithOpsLimit implements Operatio
     if (isBlocked()) {
       return false;
     }
-    ++completedOperations;
-    return buffer.put(portion);
+    try {
+      return buffer.put(portion);
+    } finally {
+      ++completedOperations;
+      if (completedOperations >= maxOperations) {
+        block();
+        notifyOlrListeners();
+      }
+    }
   }
 
   @Override
@@ -35,8 +42,15 @@ public class BufferServant extends BoundedBufferWithOpsLimit implements Operatio
     if (isBlocked()) {
       return null;
     }
-    ++completedOperations;
-    return buffer.take(portionSize);
+    try {
+      return buffer.take(portionSize);
+    } finally {
+      ++completedOperations;
+      if (completedOperations >= maxOperations) {
+        block();
+        notifyOlrListeners();
+      }
+    }
   }
 
   @Override
@@ -57,5 +71,10 @@ public class BufferServant extends BoundedBufferWithOpsLimit implements Operatio
   @Override
   public boolean removeOlrListener(OperationLimitReachedEventListener listener) {
     return listeners.remove(listener);
+  }
+
+  private void notifyOlrListeners() {
+    System.out.println("OLR Event emitted");
+    listeners.forEach(listener -> listener.notifyOnOlrEvent(this));
   }
 }

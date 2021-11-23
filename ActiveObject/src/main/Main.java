@@ -37,11 +37,11 @@ public class Main {
 //  };
 
   private static final int[] N_PRODUCERS_ARR = {
-      1, 4, 7, 10
+      1, 4//, 7, 10
   };
 
   private static final int[] N_CONSUMERS_ARR = {
-      1, 4, 7, 10
+      1, 4//, 7, 10
   };
 
 //  private static final int[] BUFFER_SIZE_ARR = {
@@ -57,18 +57,18 @@ public class Main {
 //  };
 
   private static final int[] BUFFER_OPS_ARR = {
-      200000
+      10
   };
 
   private static final ConsumerFactory[] CONSUMER_FACTORY_ARR = {
-      RandomPortionConsumer::new,
-      MinimalPortionConsumer::new,
+//      RandomPortionConsumer::new,
+//      MinimalPortionConsumer::new,
       MaximumPortionConsumer::new
   };
 
   private static final ProducerFactory[] PRODUCER_FACTORY_ARR = {
-      RandomPortionProducer::new,
-      MinimalPortionProducer::new,
+//      RandomPortionProducer::new,
+//      MinimalPortionProducer::new,
       MaximumPortionProducer::new
   };
 

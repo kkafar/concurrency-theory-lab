@@ -22,10 +22,11 @@ abstract public class Consumer extends Actor {
       extraWork.run();
     }
     if (promise.isResolved()) {
+      System.out.println("RESOLVED PRODUCER");
+      ++completedOperations;
     } else if (promise.isRejected()) {
+      System.out.println("REJECTED PRODUCER");
       deactivate();
-    } else {
     }
-    if (active) ++completedOperations;
   }
 }
