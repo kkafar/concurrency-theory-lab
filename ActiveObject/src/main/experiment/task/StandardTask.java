@@ -4,6 +4,7 @@ import main.actors.interfaces.Consumer;
 import main.actors.interfaces.ConsumerFactory;
 import main.actors.interfaces.Producer;
 import main.actors.interfaces.ProducerFactory;
+import main.ao.client.impls.AsyncBuffer;
 import main.ao.client.interfaces.BufferProxy;
 import main.ao.client.interfaces.BufferProxyFactory;
 import main.ao.struct.impls.UnsyncPromise;
@@ -15,6 +16,7 @@ public final class StandardTask implements Task {
   private final int bufferSize;
   private final int numberOfProducers;
   private final int numberOfConsumers;
+  private final int extraTaskRepeats;
   private final int repeats;
 
   private Producer[] producers;
@@ -42,7 +44,8 @@ public final class StandardTask implements Task {
       final int bufferSize,
       final long bufferOperationsBound,
       final long startingRngSeed,
-      final int repeats
+      final int repeats,
+      final int extraTaskRepeats
   ) {
     this.initialRngSeed = startingRngSeed;
     this.timer = new Timer();
@@ -54,6 +57,7 @@ public final class StandardTask implements Task {
     this.numberOfProducers = numberOfProducers;
     this.repeats = repeats;
     this.bufferSize = bufferSize;
+    this.extraTaskRepeats = extraTaskRepeats;
     this.bufferOperationsBound = bufferOperationsBound;
     this.taskResult = new StandardTaskResult(repeats);
 
@@ -72,19 +76,20 @@ public final class StandardTask implements Task {
 
   private void initProducers() {
     for (int i = 0; i < numberOfProducers; ++i) {
-      producers[i] = producerFactory.create(buffer, initialRngSeed);
+      producers[i] = producerFactory.create(buffer, extraTaskRepeats, initialRngSeed);
       producers[i].setName("PRODUCER " + i);
     }
   }
 
   private void initConsumers() {
     for (int i = 0; i < numberOfConsumers; ++i) {
-      consumers[i] = consumerFactory.create(buffer, initialRngSeed);
+      consumers[i] = consumerFactory.create(buffer, extraTaskRepeats, initialRngSeed);
       consumers[i].setName("CONSUMER " + i);
     }
   }
 
   private void start() {
+    ((AsyncBuffer) buffer).getScheduler().start();
     for (int i = 0; i < numberOfProducers; ++i) {
       producers[i].start();
     }
@@ -150,6 +155,7 @@ public final class StandardTask implements Task {
       start();
       join();
       timer.stop();
+      ((AsyncBuffer) buffer).getScheduler().join();
       extractResult();
     }
     taskResult.setTaskDescription(getDescription());

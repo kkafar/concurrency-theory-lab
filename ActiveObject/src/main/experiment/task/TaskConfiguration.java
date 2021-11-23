@@ -5,6 +5,7 @@ abstract public class TaskConfiguration {
   protected final int numberOfConsumers;
   protected final int bufferSize;
   protected final long bufferOperationBound;
+  protected final int extraTaskRepeats;
   protected final String description;
 
   public TaskConfiguration(
@@ -12,12 +13,14 @@ abstract public class TaskConfiguration {
       final int numberOfProducers,
       final int numberOfConsumers,
       final int bufferSize,
-      final long bufferOperationBound
+      final long bufferOperationBound,
+      final int extraTaskRepeats
   ) {
     this.description = description;
     this.numberOfConsumers = numberOfConsumers;
     this.numberOfProducers = numberOfProducers;
     this.bufferSize = bufferSize;
+    this.extraTaskRepeats = extraTaskRepeats;
     this.bufferOperationBound = bufferOperationBound;
   }
 
@@ -37,15 +40,21 @@ abstract public class TaskConfiguration {
     return bufferOperationBound;
   }
 
+  public int getExtraTaskRepeats() {
+    return extraTaskRepeats;
+  }
+
   public String getDescription() {
     return description + "\n" +
-        " PRODUCERS: " +
+        "PRODUCERS: " +
         numberOfProducers + "\n" +
-        " CONSUMERS: " +
+        "CONSUMERS: " +
         numberOfConsumers + "\n" +
-        " BUFFER_SIZE: " +
+        "BUFFER_SIZE: " +
         bufferSize + "\n" +
-        " OPERATION_BOUND: " +
-        bufferOperationBound + "\n";
+        "OPERATION_BOUND: " +
+        bufferOperationBound + "\n" +
+        "EX. TASKS: " +
+        extraTaskRepeats + "\n";
   }
 }

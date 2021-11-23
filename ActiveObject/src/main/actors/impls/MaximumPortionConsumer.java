@@ -4,8 +4,8 @@ import main.actors.interfaces.Consumer;
 import main.ao.client.interfaces.BufferProxy;
 
 public final class MaximumPortionConsumer extends Consumer {
-  public MaximumPortionConsumer(BufferProxy buffer, long initialRngSeed) {
-    super(buffer, initialRngSeed);
+  public MaximumPortionConsumer(BufferProxy buffer, int extraTaskRepeats, long initialRngSeed) {
+    super(buffer, extraTaskRepeats,initialRngSeed);
   }
 
   @Override

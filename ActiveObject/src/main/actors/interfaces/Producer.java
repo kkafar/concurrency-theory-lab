@@ -6,8 +6,8 @@ import main.ao.struct.interfaces.Promise;
 import java.util.Arrays;
 
 abstract public class Producer extends Actor {
-  public Producer(BufferProxy buffer, long initialRngSeed) {
-    super(buffer, initialRngSeed);
+  public Producer(BufferProxy buffer, int extraTaskRepeats, long initialRngSeed) {
+    super(buffer, extraTaskRepeats, initialRngSeed);
   }
 
   public void run() {
@@ -29,10 +29,10 @@ abstract public class Producer extends Actor {
 
     }
     if (promise.isResolved()) {
-      System.out.println("RESOLVED PRODUCER");
+//      System.out.println("RESOLVED PRODUCER");
       ++completedOperations;
     } else if (promise.isRejected()) {
-      System.out.println("REJECTED PRODUCER");
+//      System.out.println("REJECTED PRODUCER");
       deactivate();
     }
   }

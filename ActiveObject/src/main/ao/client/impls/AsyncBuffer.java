@@ -26,7 +26,7 @@ public class AsyncBuffer implements BufferProxy, OperationLimitReachedEventListe
     bufferServant.addOlrListener(this);
     scheduler = new StandardScheduler();
     scheduler.setName("Scheduler Thread");
-    scheduler.start();
+//    scheduler.start();
   }
 
   @Override

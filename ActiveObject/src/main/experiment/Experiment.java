@@ -59,7 +59,8 @@ public class Experiment {
         task.getBufferSize(),
         task.getBufferOperationBound(),
         startingRngSeed,
-        singleTaskRepeats
+        singleTaskRepeats,
+        task.getExtraTaskRepeats()
     ));
   }
 
@@ -76,7 +77,8 @@ public class Experiment {
             task.getBufferSize(),
             task.getBufferOperationBound(),
             startingRngSeed,
-            singleTaskRepeats
+            singleTaskRepeats,
+            task.getExtraTaskRepeats()
         )
       );
     });
@@ -91,7 +93,7 @@ public class Experiment {
         false
     );
 
-    Producer producer = producerFactory.create(mockBuffer, 10);
+    Producer producer = producerFactory.create(mockBuffer, 10,10);
     if (producer instanceof RandomPortionProducer) {
       stringBuilder.append("Producer: RandomPortion\n");
     } else if (producer instanceof MinimalPortionProducer) {
@@ -102,7 +104,7 @@ public class Experiment {
       stringBuilder.append("Producer: Unknown type\n");
     }
 
-    Consumer consumer = consumerFactory.create(mockBuffer, 10);
+    Consumer consumer = consumerFactory.create(mockBuffer, 10,10);
 
     if (consumer instanceof RandomPortionConsumer) {
       stringBuilder.append("Consumer: RandomPortion\n");

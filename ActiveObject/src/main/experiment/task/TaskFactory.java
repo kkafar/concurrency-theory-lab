@@ -30,6 +30,7 @@ public interface TaskFactory {
       final int bufferSize,
       final long bufferOperationsBound,
       final long startingRngSeed,
-      final int repeats
+      final int repeats,
+      final int extraTaskRepeats
   );
 }

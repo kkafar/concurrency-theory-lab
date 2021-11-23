@@ -4,8 +4,8 @@ import main.ao.client.interfaces.BufferProxy;
 import main.ao.struct.interfaces.Promise;
 
 abstract public class Consumer extends Actor {
-  public Consumer(BufferProxy buffer, long initialRngSeed) {
-    super(buffer, initialRngSeed);
+  public Consumer(BufferProxy buffer, int extraTaskRepeats, long initialRngSeed) {
+    super(buffer, extraTaskRepeats, initialRngSeed);
   }
 
   public void run() {
@@ -22,10 +22,10 @@ abstract public class Consumer extends Actor {
       extraWork.run();
     }
     if (promise.isResolved()) {
-      System.out.println("RESOLVED PRODUCER");
+//      System.out.println("RESOLVED CONSUMER");
       ++completedOperations;
     } else if (promise.isRejected()) {
-      System.out.println("REJECTED PRODUCER");
+//      System.out.println("REJECTED CONSUMER");
       deactivate();
     }
   }

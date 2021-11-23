@@ -35,40 +35,35 @@ public class Main {
 //  private static final int[] N_CONSUMERS_ARR = {
 //      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 //  };
-
-  private static final int[] N_PRODUCERS_ARR = {
-      1, 4//, 7, 10
-  };
+private static final int[] N_PRODUCERS_ARR = {
+    1, 3, 5, 7, 9
+};
 
   private static final int[] N_CONSUMERS_ARR = {
-      1, 4//, 7, 10
+      1, 3, 5, 7, 9
   };
-
-//  private static final int[] BUFFER_SIZE_ARR = {
-//      5, 10, 15, 20, 25, 30, 35, 40, 45, 50
-//  };
 
   private static final int[] BUFFER_SIZE_ARR = {
-      10
+      10, 50, 100
   };
 
-//  private static final int[] BUFFER_OPS_ARR = {
-//      10000, 50000, 100000, 150000, 200000, 250000
-//  };
-
   private static final int[] BUFFER_OPS_ARR = {
-      10
+      20000
+  };
+
+  private static final int[] EXTRA_TASK_REPEATS = {
+      10000, 25000, 50000
   };
 
   private static final ConsumerFactory[] CONSUMER_FACTORY_ARR = {
-//      RandomPortionConsumer::new,
-//      MinimalPortionConsumer::new,
+      RandomPortionConsumer::new,
+      MinimalPortionConsumer::new,
       MaximumPortionConsumer::new
   };
 
   private static final ProducerFactory[] PRODUCER_FACTORY_ARR = {
-//      RandomPortionProducer::new,
-//      MinimalPortionProducer::new,
+      RandomPortionProducer::new,
+      MinimalPortionProducer::new,
       MaximumPortionProducer::new
   };
 
@@ -86,13 +81,16 @@ public class Main {
       for (int nCons : N_CONSUMERS_ARR) {
         for (int bufSize : BUFFER_SIZE_ARR) {
           for (int bufOps : BUFFER_OPS_ARR) {
-            taskConfigurations.add(new StandardTaskConfiguration(
-                "TASK DESCRIPTION",
-                nProd,
-                nCons,
-                bufSize,
-                bufOps
-            ));
+            for (int taskRepeats : EXTRA_TASK_REPEATS){
+              taskConfigurations.add(new StandardTaskConfiguration(
+                  "TASK DESCRIPTION",
+                  nProd,
+                  nCons,
+                  bufSize,
+                  bufOps,
+                  taskRepeats
+              ));
+            }
           }
         }
       }

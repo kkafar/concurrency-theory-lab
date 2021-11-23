@@ -7,11 +7,11 @@ abstract public class Scheduler extends Thread {
   protected static volatile boolean created;
 
   public Scheduler() {
-    if (created) {
-      throw new IllegalStateException("Scheduler constuctor called for the second time");
-    }
+//    if (created) {
+//      throw new IllegalStateException("Scheduler constuctor called for the second time");
+//    }
     active = false;
-    created = true;
+//    created = true;
   }
 
   abstract public void add(MethodRequest methodRequest);

@@ -35,9 +35,16 @@ public class SyncList implements ActivationStruct {
   public void putBack(MethodRequest request) {
     if (cancelled) {
       request.getPromise().reject();
+//      emptyList.signalAll();
+      return;
     };
     lock.lock();
     try {
+      if (cancelled) {
+        request.getPromise().reject();
+        emptyList.signalAll();
+        return;
+      };
       requests.addLast(request);
     } finally {
       emptyList.signal();
@@ -82,17 +89,18 @@ public class SyncList implements ActivationStruct {
     }
     lock.lock();
     try {
+      if (cancelled) return null;
       MethodRequest ret = requests.pollFirst();
       while (ret == null && !cancelled) {
-        System.out.println("Scheduler: before await");
-        if (Thread.currentThread().isInterrupted()) {
+//        System.out.println("Scheduler: before await");
+        if (Thread.currentThread().isInterrupted() || cancelled) {
           return null;
         }
         emptyList.await();
-        if (Thread.currentThread().isInterrupted()) {
+        if (Thread.currentThread().isInterrupted() || cancelled) {
           return null;
         }
-        System.out.println("Scheduler: after await");
+//        System.out.println("Scheduler: after await");
         ret = requests.pollFirst();
       }
       return ret;

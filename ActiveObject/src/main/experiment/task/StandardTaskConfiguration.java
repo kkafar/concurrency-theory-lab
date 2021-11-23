@@ -6,8 +6,9 @@ public final class StandardTaskConfiguration extends TaskConfiguration {
       int numberOfProducers,
       int numberOfConsumers,
       int bufferSize,
-      long bufferOperationBound
+      long bufferOperationBound,
+      int extraTaskRepeats
   ) {
-    super(description, numberOfProducers, numberOfConsumers, bufferSize, bufferOperationBound);
+    super(description, numberOfProducers, numberOfConsumers, bufferSize, bufferOperationBound, extraTaskRepeats);
   }
 }

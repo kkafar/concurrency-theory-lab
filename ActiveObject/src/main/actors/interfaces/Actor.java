@@ -10,21 +10,24 @@ abstract public class Actor extends Thread {
   protected final Random rng;
   protected final int maxPortionSize;
   protected final int minPortionSize;
+  protected final int extraTaskRepeats;
 
-  protected final UnitOfWork extraWork = new UnitOfWork(50000);
+  protected final UnitOfWork extraWork;
 
   volatile protected boolean active;
   protected long completedOperations;
 
   protected BufferProxy buffer;
 
-  public Actor(BufferProxy buffer, final long initialRngSeed) {
+  public Actor(BufferProxy buffer, final int extraTaskRepeats, final long initialRngSeed) {
     this.buffer = buffer;
     this.initialRngSeed = initialRngSeed;
     this.rng = new Random(initialRngSeed);
     this.maxPortionSize = buffer.getSize() / 2;
     this.minPortionSize = 1;
     this.completedOperations = 0;
+    this.extraTaskRepeats = extraTaskRepeats;
+    this.extraWork = new UnitOfWork(extraTaskRepeats);
   }
 
   public long getNumberOfCompletedOperations() {

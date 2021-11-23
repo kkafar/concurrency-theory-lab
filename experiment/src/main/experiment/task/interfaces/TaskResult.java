@@ -53,29 +53,29 @@ abstract public class TaskResult {
 
   private String getDurationsDescription() {
       StringBuilder stringBuilder = new StringBuilder();
-      stringBuilder.append("Durations\n[ ");
+      stringBuilder.append("Durations\n");
       for (long duration : durationsInMs) {
         stringBuilder.append(duration).append(" ");
       }
-      return stringBuilder.append("]\n").toString();
+      return stringBuilder.append("\n").toString();
   }
 
   private String getOperationsByConsumersDescription() {
     StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("Consumers\n[ ");
+    stringBuilder.append("Consumers\n");
     for (long operations : operationsCompletedByConsumers) {
       stringBuilder.append(operations).append(" ");
     }
-    return stringBuilder.append("]\n").toString();
+    return stringBuilder.append("\n").toString();
   }
 
   private String getOperationsByProducersDescription() {
     StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("Producers\n[ ");
+    stringBuilder.append("Producers\n");
     for (long operations : operationsCompletedByProducers) {
       stringBuilder.append(operations).append(" ");
     }
-    return stringBuilder.append("]\n").toString();
+    return stringBuilder.append("\n").toString();
   }
 
   public String toString() {
@@ -84,7 +84,6 @@ abstract public class TaskResult {
         getDurationsDescription() +
         getOperationsByConsumersDescription() +
         getOperationsByProducersDescription() +
-        taskSeparator +
-        "\n";
+        taskSeparator;
   }
 }
