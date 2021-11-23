@@ -14,7 +14,8 @@ public class BufferServant extends BoundedBufferWithOpsLimit implements Operatio
       final int bufferSize,
       final long maxOperations,
       final BufferFactory bufferFactory,
-      final boolean log) {
+      final boolean log
+  ) {
     super(bufferSize, maxOperations);
     buffer = bufferFactory.create(bufferSize, log);
     listeners = new HashSet<>(1);
