@@ -33,7 +33,9 @@ public class SyncList implements ActivationStruct {
 
   @Override
   public void putBack(MethodRequest request) {
-    if (cancelled) return;
+    if (cancelled) {
+      request.getPromise().reject();
+    };
     lock.lock();
     try {
       requests.addLast(request);
@@ -75,12 +77,21 @@ public class SyncList implements ActivationStruct {
 
   @Override
   public MethodRequest getFirst() {
+    if (Thread.currentThread().isInterrupted()) {
+      return null;
+    }
     lock.lock();
     try {
       MethodRequest ret = requests.pollFirst();
       while (ret == null && !cancelled) {
         System.out.println("Scheduler: before await");
+        if (Thread.currentThread().isInterrupted()) {
+          return null;
+        }
         emptyList.await();
+        if (Thread.currentThread().isInterrupted()) {
+          return null;
+        }
         System.out.println("Scheduler: after await");
         ret = requests.pollFirst();
       }
