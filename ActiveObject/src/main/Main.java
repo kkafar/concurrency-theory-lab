@@ -52,7 +52,7 @@ private static final int[] N_PRODUCERS_ARR = {
   };
 
   private static final int[] EXTRA_TASK_REPEATS = {
-      10000, 25000, 50000
+      500, 1000, 2000
   };
 
   private static final ConsumerFactory[] CONSUMER_FACTORY_ARR = {
