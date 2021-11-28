@@ -27,7 +27,7 @@ public class ExperimentResult {
     return results;
   }
 
-  public void addExperimentDescription(String description) {
+  public void setDescription(String description) {
     this.description = description;
   }
 

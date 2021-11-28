@@ -8,7 +8,6 @@ import main.actors.interfaces.ProducerFactory;
 import main.ao.client.interfaces.BufferProxy;
 import main.ao.client.interfaces.BufferProxyFactory;
 import main.ao.struct.impls.UnsyncPromise;
-import main.buffer.interfaces.BufferFactory;
 import main.experiment.result.ExperimentResult;
 import main.experiment.task.Task;
 import main.experiment.task.TaskConfiguration;
@@ -85,6 +84,10 @@ public class Experiment {
   }
 
   public String toString() {
+    return getExperimentInformation();
+  }
+
+  private String getExperimentInformation() {
     StringBuilder stringBuilder = new StringBuilder();
     BufferProxy mockBuffer = bufferFactory.create(
         10,
@@ -101,7 +104,7 @@ public class Experiment {
     } else if (producer instanceof MaximumPortionProducer) {
       stringBuilder.append("Producer: MaximumPortion\n");
     } else {
-      stringBuilder.append("Producer: Unknown type\n");
+      throw new IllegalArgumentException("Unknown type of producer");
     }
 
     Consumer consumer = consumerFactory.create(mockBuffer, 10,10);
@@ -113,7 +116,7 @@ public class Experiment {
     } else if (consumer instanceof MaximumPortionConsumer) {
       stringBuilder.append("Consumer: MaximumPortion\n");
     } else {
-      stringBuilder.append("Consumer: Unknown type\n");
+      throw new IllegalArgumentException("Unknown type of consumer");
     }
 
     return stringBuilder
@@ -124,6 +127,7 @@ public class Experiment {
         .append("\n")
         .toString();
   }
+
 
   /**
    * Returns result of conducted experiment. Note that conduct() method should be called
@@ -140,7 +144,7 @@ public class Experiment {
    * available via getResult method
    */
   public void conduct() {
-    experimentResult.addExperimentDescription(toString());
+    experimentResult.setDescription(toString());
     taskList.forEach(task -> {
       try {
         task.run();
