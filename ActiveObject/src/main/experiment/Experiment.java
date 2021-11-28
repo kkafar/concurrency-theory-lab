@@ -144,7 +144,7 @@ public class Experiment {
    * available via getResult method
    */
   public void conduct() {
-    experimentResult.setDescription(toString());
+    experimentResult.setDescription(getExperimentInformation());
     taskList.forEach(task -> {
       try {
         task.run();
