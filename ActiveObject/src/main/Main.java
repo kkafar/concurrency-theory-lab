@@ -18,7 +18,15 @@ import main.experiment.task.StandardTask;
 import main.experiment.task.StandardTaskConfiguration;
 import main.experiment.task.TaskConfiguration;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.CharBuffer;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,6 +35,8 @@ public class Main {
   private static final int RNG_SEED = 10;
 
   private static final String LOG_FILE_PATH = "/home/kkafara/studies/cs/5_term/twsp/lab/ActiveObject/data/temp";
+  private static final String DATA_DIR = "/home/kkafara/studies/cs/5_term/twsp/lab/data";
+  private static final String DATA_DIR_CONF = DATA_DIR + "/config";
 
 //  private static final int[] N_PRODUCERS_ARR = {
 //      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
@@ -130,7 +140,34 @@ private static final int[] N_PRODUCERS_ARR = {
 //      experiment.setLogOptions(logOptions);
       experiment.conduct();
 //      analyzer.analyze(experiment.getResult());
-      analyzer.analyzeToFile(LOG_FILE_PATH, experiment.getResult());
+      analyzer.analyzeToFile(resolveDataFile(), experiment.getResult());
     }
   }
+
+  private static String resolveDataFile() throws IOException {
+    StringBuilder dataFile = new StringBuilder().append(DATA_DIR).append("/data-");
+    File config = new File(DATA_DIR_CONF);
+
+    char[] readBuffer = new char[64];
+    Arrays.fill(readBuffer, '$');
+
+    int charsRead;
+    try {
+      FileReader configReader = new FileReader(config);
+      charsRead = configReader.read(readBuffer);
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw e;
+    }
+
+    for (int i = 0; i < charsRead; ++i) {
+      dataFile.append(readBuffer[i]);
+    }
+
+    dataFile.append(".txt");
+
+    return dataFile.toString();
+  }
+
+
 }
