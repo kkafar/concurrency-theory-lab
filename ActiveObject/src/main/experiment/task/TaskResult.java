@@ -1,7 +1,6 @@
 package main.experiment.task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 abstract public class TaskResult {
   protected final List<Long> durationsInMs;
@@ -64,28 +63,47 @@ abstract public class TaskResult {
     for (long duration : durationsInMs) {
       stringBuilder.append(duration).append(" ");
     }
-    return stringBuilder.append("\n").toString();
+    stringBuilder.append("\nMean ").append(getMean(durationsInMs)).append("\n");
+    return stringBuilder.toString();
   }
 
   private String getOperationsByConsumersDescription() {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("Consumer ops\nAll\n");
-    for (long operations : operationsCompletedByConsumers) {
-      stringBuilder.append(operations).append(" ");
-    }
-
-
-    return stringBuilder.append("\n").toString();
+    return getActorOperationsDescription("Consumer", operationsCompletedByConsumers);
   }
 
   private String getOperationsByProducersDescription() {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("Producer ops\nAll\n");
-    for (long operations : operationsCompletedByProducers) {
-      stringBuilder.append(operations).append(" ");
-    }
-    return stringBuilder.append("\n").toString();
+    return getActorOperationsDescription("Producer", operationsCompletedByProducers);
   }
+
+  private String getActorOperationsDescription(String actor, List<Long> completedOperations) {
+    if (!actor.equals("Consumer") && !actor.equals("Producer")) {
+      throw new IllegalArgumentException("Actor must be one of: \"Consumer\", \"Producer\"");
+    }
+
+    StringBuilder opsDescription = new StringBuilder();
+    opsDescription.append(actor).append(" ops\nAll\n");
+
+    completedOperations.forEach((ops) -> {
+      opsDescription.append(ops).append(" ");
+    });
+
+    opsDescription.append("\nMean ").append(getMean(completedOperations)).append("\n");
+
+    return opsDescription.toString();
+  }
+
+  private long getSumOf(Collection<Long> collection) {
+    long sum = 0;
+    for (long elem : collection) {
+      sum += elem;
+    }
+    return sum;
+  }
+
+  private double getMean(Collection<Long> collection) {
+    return ((double) (getSumOf(collection))) / collection.size();
+  }
+
 
   public String toString() {
     return
