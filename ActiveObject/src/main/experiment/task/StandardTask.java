@@ -118,7 +118,7 @@ public final class StandardTask implements Task {
   }
 
   private void extractResult() {
-    taskResult.addTaskDuration(timer.getElapsed());
+    taskResult.addDuration(timer.getElapsed());
 
     for (Producer producer : producers) {
       taskResult.addOperationsCompletedByProducer(
@@ -158,6 +158,6 @@ public final class StandardTask implements Task {
       ((AsyncBuffer) buffer).getScheduler().join();
       extractResult();
     }
-    taskResult.setTaskDescription(getDescription());
+    taskResult.setDescription(getDescription());
   }
 }

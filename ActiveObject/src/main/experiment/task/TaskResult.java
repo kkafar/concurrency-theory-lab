@@ -7,16 +7,23 @@ abstract public class TaskResult {
   protected final List<Long> durationsInMs;
   protected final List<Long> operationsCompletedByProducers;
   protected final List<Long> operationsCompletedByConsumers;
+  protected final int numberOfProducers;
+  protected final int numberOfConsumers;
+  protected final int numberOfRepeats;
 
   private String taskDescription = "NO TASK DESCRIPTION PROVIDED";
 
-  private static String taskSeparator = "===============================================\n";
-  private static String sectionSeparator = "+++++++++++++++++++++++++++++++++++++++++++++++\n";
+//  private static String taskSeparator = "===============================================\n";
+//  private static String sectionSeparator = "+++++++++++++++++++++++++++++++++++++++++++++++\n";
 
-  public TaskResult(final int entries) {
+  public TaskResult(final int numberOfProducers, final int numberOfConsumers, final int entries) {
     durationsInMs = new ArrayList<>(entries);
     operationsCompletedByConsumers = new ArrayList<>(entries);
     operationsCompletedByProducers = new ArrayList<>(entries);
+    numberOfRepeats = entries;
+
+    this.numberOfProducers = numberOfProducers;
+    this.numberOfConsumers = numberOfConsumers;
   }
 
   public List<Long> getDurationsInMs() {
@@ -31,11 +38,11 @@ abstract public class TaskResult {
     return operationsCompletedByConsumers;
   }
 
-  public String getTaskDescription() {
+  public String getDescription() {
     return taskDescription;
   }
 
-  public void addTaskDuration(long durationInMs) {
+  public void addDuration(long durationInMs) {
     durationsInMs.add(durationInMs);
   }
 
@@ -47,7 +54,7 @@ abstract public class TaskResult {
     operationsCompletedByConsumers.add(completedOperations);
   }
 
-  public void setTaskDescription(final String description) {
+  public void setDescription(final String description) {
     taskDescription = description;
   }
 
@@ -62,16 +69,18 @@ abstract public class TaskResult {
 
   private String getOperationsByConsumersDescription() {
     StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("Consumers\n");
+    stringBuilder.append("Consumer ops\nAll\n");
     for (long operations : operationsCompletedByConsumers) {
       stringBuilder.append(operations).append(" ");
     }
+
+
     return stringBuilder.append("\n").toString();
   }
 
   private String getOperationsByProducersDescription() {
     StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("Producers\n");
+    stringBuilder.append("Producer ops\nAll\n");
     for (long operations : operationsCompletedByProducers) {
       stringBuilder.append(operations).append(" ");
     }
@@ -79,12 +88,10 @@ abstract public class TaskResult {
   }
 
   public String toString() {
-    return taskSeparator +
-        getTaskDescription() +
+    return
+        getDescription() +
         getDurationsDescription() +
         getOperationsByConsumersDescription() +
-        getOperationsByProducersDescription() +
-        taskSeparator +
-        "\n";
+        getOperationsByProducersDescription();
   }
 }

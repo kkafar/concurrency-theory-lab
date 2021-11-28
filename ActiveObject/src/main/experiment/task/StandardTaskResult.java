@@ -1,7 +1,7 @@
 package main.experiment.task;
 
 public final class StandardTaskResult extends TaskResult {
-  public StandardTaskResult(int entries) {
-    super(entries);
+  public StandardTaskResult(final int numberOfProducers, final int numberOfConsumers, final int entries) {
+    super(numberOfProducers, numberOfConsumers, entries);
   }
 }
