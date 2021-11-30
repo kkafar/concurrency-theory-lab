@@ -5,8 +5,8 @@ import main.buffer.interfaces.Buffer;
 import java.util.Arrays;
 
 abstract public class Producer extends Actor {
-  public Producer(Buffer buffer, long initialRngSeed) {
-    super(buffer, initialRngSeed);
+  public Producer(Buffer buffer, final int extraTaskRepeats, long initialRngSeed) {
+    super(buffer, extraTaskRepeats, initialRngSeed);
   }
 
   public void run() {
@@ -20,6 +20,9 @@ abstract public class Producer extends Actor {
 
   public void put(Object[] objects) {
     buffer.put(objects);
-    if (active) ++completedOperations;
+    if (active) {
+      ++completedOperations;
+      work.run();
+    }
   }
 }

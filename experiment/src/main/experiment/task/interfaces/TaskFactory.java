@@ -28,8 +28,10 @@ public interface TaskFactory {
       final ConsumerFactory consumerFactory,
       final BufferFactory bufferFactory,
       final int bufferSize,
+      final int extraTaskRepeats,
       final long bufferOperationsBound,
       final long startingRngSeed,
       final int repeats
+
   );
 }

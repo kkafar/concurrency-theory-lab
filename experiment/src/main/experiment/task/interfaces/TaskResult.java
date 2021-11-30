@@ -1,6 +1,7 @@
 package main.experiment.task.interfaces;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 abstract public class TaskResult {
@@ -10,8 +11,8 @@ abstract public class TaskResult {
 
   private String taskDescription = "NO TASK DESCRIPTION PROVIDED";
 
-  private static String taskSeparator = "===============================================\n";
-  private static String sectionSeparator = "+++++++++++++++++++++++++++++++++++++++++++++++\n";
+//  private static String taskSeparator = "===============================================\n";
+//  private static String sectionSeparator = "+++++++++++++++++++++++++++++++++++++++++++++++\n";
 
   public TaskResult(final int entries) {
     durationsInMs = new ArrayList<>(entries);
@@ -52,39 +53,57 @@ abstract public class TaskResult {
   }
 
   private String getDurationsDescription() {
-      StringBuilder stringBuilder = new StringBuilder();
-      stringBuilder.append("Durations\n[ ");
-      for (long duration : durationsInMs) {
-        stringBuilder.append(duration).append(" ");
-      }
-      return stringBuilder.append("]\n").toString();
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("Durations\n");
+    for (long duration : durationsInMs) {
+      stringBuilder.append(duration).append(" ");
+    }
+    stringBuilder.append("\nMean ").append(getMean(durationsInMs)).append("\n");
+    return stringBuilder.toString();
   }
 
   private String getOperationsByConsumersDescription() {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("Consumers\n[ ");
-    for (long operations : operationsCompletedByConsumers) {
-      stringBuilder.append(operations).append(" ");
-    }
-    return stringBuilder.append("]\n").toString();
+    return getActorOperationsDescription("Consumer", operationsCompletedByConsumers);
   }
 
   private String getOperationsByProducersDescription() {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("Producers\n[ ");
-    for (long operations : operationsCompletedByProducers) {
-      stringBuilder.append(operations).append(" ");
+    return getActorOperationsDescription("Producer", operationsCompletedByProducers);
+  }
+
+  private String getActorOperationsDescription(String actor, List<Long> completedOperations) {
+    if (!actor.equals("Consumer") && !actor.equals("Producer")) {
+      throw new IllegalArgumentException("Actor must be one of: \"Consumer\", \"Producer\"");
     }
-    return stringBuilder.append("]\n").toString();
+
+    StringBuilder opsDescription = new StringBuilder();
+    opsDescription.append(actor).append(" ops\nAll\n");
+
+    completedOperations.forEach((ops) -> {
+      opsDescription.append(ops).append(" ");
+    });
+
+    opsDescription.append("\nMean ").append(getMean(completedOperations)).append("\n");
+
+    return opsDescription.toString();
+  }
+
+  private long getSumOf(Collection<Long> collection) {
+    long sum = 0;
+    for (long elem : collection) {
+      sum += elem;
+    }
+    return sum;
+  }
+
+  private double getMean(Collection<Long> collection) {
+    return ((double) (getSumOf(collection))) / collection.size();
   }
 
   public String toString() {
-    return taskSeparator +
+    return
         getTaskDescription() +
         getDurationsDescription() +
         getOperationsByConsumersDescription() +
-        getOperationsByProducersDescription() +
-        taskSeparator +
-        "\n";
+        getOperationsByProducersDescription();
   }
 }

@@ -33,6 +33,8 @@ public final class StandardTask implements Task {
   private final ProducerFactory producerFactory;
   private final ConsumerFactory consumerFactory;
 
+  private final int extraTaskRepeats;
+
   public StandardTask(
       final String description,
       final int numberOfProducers,
@@ -41,6 +43,7 @@ public final class StandardTask implements Task {
       final ConsumerFactory consumerFactory,
       final BufferFactory bufferFactory,
       final int bufferSize,
+      final int extraTaskRepeats,
       final long bufferOperationsBound,
       final long startingRngSeed,
       final int repeats
@@ -55,6 +58,7 @@ public final class StandardTask implements Task {
     this.numberOfProducers = numberOfProducers;
     this.repeats = repeats;
     this.bufferSize = bufferSize;
+    this.extraTaskRepeats = extraTaskRepeats;
     this.bufferOperationsBound = bufferOperationsBound;
     this.taskResult = new StandardTaskResult(repeats);
 
@@ -73,14 +77,14 @@ public final class StandardTask implements Task {
 
   private void initProducers() {
     for (int i = 0; i < numberOfProducers; ++i) {
-      producers[i] = producerFactory.create(buffer, initialRngSeed);
+      producers[i] = producerFactory.create(buffer, extraTaskRepeats, initialRngSeed);
       producers[i].setName("PRODUCER " + i);
     }
   }
 
   private void initConsumers() {
     for (int i = 0; i < numberOfConsumers; ++i) {
-      consumers[i] = consumerFactory.create(buffer, initialRngSeed);
+      consumers[i] = consumerFactory.create(buffer, extraTaskRepeats, initialRngSeed);
       consumers[i].setName("CONSUMER " + i);
     }
   }
