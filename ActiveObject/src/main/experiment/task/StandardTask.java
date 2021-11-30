@@ -59,7 +59,7 @@ public final class StandardTask implements Task {
     this.bufferSize = bufferSize;
     this.extraTaskRepeats = extraTaskRepeats;
     this.bufferOperationsBound = bufferOperationsBound;
-    this.taskResult = new StandardTaskResult(repeats);
+    this.taskResult = new StandardTaskResult(numberOfProducers, numberOfConsumers, repeats);
 
     // setup is called in start() method
 //    setup();

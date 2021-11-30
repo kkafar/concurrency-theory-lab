@@ -14,7 +14,7 @@ public class StandardScheduler extends Scheduler {
 
   public StandardScheduler() {
     super();
-    System.out.println("Creating scheduler instance");
+//    System.out.println("Creating scheduler instance");
     awaitingList = new UnsyncList();
     freshList = new SyncList();
   }
@@ -55,7 +55,7 @@ public class StandardScheduler extends Scheduler {
 
   @Override
   public void deactivate() {
-    System.out.println("Scheduler deactivated");
+//    System.out.println("Scheduler deactivated");
     active = false;
     interrupt();
     freshList.cancelAll();

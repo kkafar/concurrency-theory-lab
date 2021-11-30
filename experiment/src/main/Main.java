@@ -22,14 +22,14 @@ public class Main {
   private static final int N_REPEATS = 10;
   private static final int RNG_SEED = 10;
 
-  private static final String LOG_FILE_PATH = "/home/kkafara/studies/cs/5_term/twsp/lab/experiment/data/temp";
+  private static final String LOG_FILE_PATH = "/home/kkafara/studies/cs/5_term/twsp/lab/experiment/data/temp4";
 
   private static final int[] N_PRODUCERS_ARR = {
-      1, 3, 5, 7, 9
+      1, 3, 5, 7//, 9
   };
 
   private static final int[] N_CONSUMERS_ARR = {
-      1, 3, 5, 7, 9
+      1, 3, 5, 7//, 9
   };
 
 //  private static final int[] BUFFER_SIZE_ARR = {
@@ -45,7 +45,11 @@ public class Main {
 //  };
 
   private static final int[] BUFFER_OPS_ARR = {
-      20000
+      15000
+  };
+
+  private static final int[] EXTRA_TASK_REPEATS = {
+      50, 100, 250, 500
   };
 
   private static final ConsumerFactory[] CONSUMER_FACTORY_ARR = {
@@ -61,7 +65,7 @@ public class Main {
   };
 
   private static final BufferFactory[] BUFFER_FACTORY_ARR = {
-      ThreeLocksBufferProxy::new,
+//      ThreeLocksBufferProxy::new,
       FourCondsBufferProxy::new
   };
 
@@ -75,13 +79,17 @@ public class Main {
       for (int nCons : N_CONSUMERS_ARR) {
         for (int bufSize : BUFFER_SIZE_ARR) {
           for (int bufOps : BUFFER_OPS_ARR) {
-            taskConfigurations.add(new StandardTaskConfiguration(
-                "TASK DESCRIPTION",
-                nProd,
-                nCons,
-                bufSize,
-                bufOps
-            ));
+            for (int extraTaskRepeats : EXTRA_TASK_REPEATS) {
+              taskConfigurations.add(new StandardTaskConfiguration(
+                  "TASK DESCRIPTION",
+                  nProd,
+                  nCons,
+                  bufSize,
+                  bufOps,
+                  extraTaskRepeats
+              ));
+
+            }
           }
         }
       }

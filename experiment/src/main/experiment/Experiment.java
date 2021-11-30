@@ -58,6 +58,7 @@ public class Experiment {
         consumerFactory,
         bufferFactory,
         task.getBufferSize(),
+        task.getExtraTaskRepeats(),
         task.getBufferOperationBound(),
         startingRngSeed,
         singleTaskRepeats
@@ -75,6 +76,7 @@ public class Experiment {
             consumerFactory,
             bufferFactory,
             task.getBufferSize(),
+            task.getExtraTaskRepeats(),
             task.getBufferOperationBound(),
             startingRngSeed,
             singleTaskRepeats
@@ -91,15 +93,15 @@ public class Experiment {
     StringBuilder stringBuilder = new StringBuilder();
     Buffer mockBuffer = bufferFactory.create(10, 10, false);
 
-    if (mockBuffer instanceof FourCondsBufferProxy) {
-      stringBuilder.append("Buffer: FourCondsBufferProxy\n");
-    } else if (mockBuffer instanceof ThreeLocksBufferProxy) {
-      stringBuilder.append("Buffer: ThreeLocksBufferProxy\n");
-    } else {
-      stringBuilder.append("Buffer: Unknown type\n");
-    }
+//    if (mockBuffer instanceof FourCondsBufferProxy) {
+//      stringBuilder.append("Buffer: FourCondsBufferProxy\n");
+//    } else if (mockBuffer instanceof ThreeLocksBufferProxy) {
+//      stringBuilder.append("Buffer: ThreeLocksBufferProxy\n");
+//    } else {
+//      stringBuilder.append("Buffer: Unknown type\n");
+//    }
 
-    Producer producer = producerFactory.create(mockBuffer, 10);
+    Producer producer = producerFactory.create(mockBuffer, 10, 10);
     if (producer instanceof RandomPortionProducer) {
       stringBuilder.append("Producer: RandomPortion\n");
     } else if (producer instanceof MinimalPortionProducer) {
@@ -110,7 +112,7 @@ public class Experiment {
       stringBuilder.append("Producer: Unknown type\n");
     }
 
-    Consumer consumer = consumerFactory.create(mockBuffer, 10);
+    Consumer consumer = consumerFactory.create(mockBuffer, 10, 10);
 
     if (consumer instanceof RandomPortionConsumer) {
       stringBuilder.append("Consumer: RandomPortion\n");

@@ -27,7 +27,7 @@ abstract public class Scheduler extends Thread {
 
   @Override
   public void start() {
-    System.out.println("Starting scheduler");
+//    System.out.println("Starting scheduler");
     super.start();
   }
 }

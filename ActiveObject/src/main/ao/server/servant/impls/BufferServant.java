@@ -74,7 +74,7 @@ public class BufferServant extends BoundedBufferWithOpsLimit implements Operatio
   }
 
   private void notifyOlrListeners() {
-    System.out.println("OLR Event emitted");
+//    System.out.println("OLR Event emitted");
     listeners.forEach(listener -> listener.notifyOnOlrEvent(this));
   }
 }

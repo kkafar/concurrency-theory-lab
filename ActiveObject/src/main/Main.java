@@ -18,15 +18,8 @@ import main.experiment.task.StandardTask;
 import main.experiment.task.StandardTaskConfiguration;
 import main.experiment.task.TaskConfiguration;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.nio.file.Path;
-import java.time.Instant;
+import java.io.*;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,23 +39,23 @@ public class Main {
 //      1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 //  };
 private static final int[] N_PRODUCERS_ARR = {
-    1, 3, 5, 7, 9
+    1, 3, 5, 7
 };
 
   private static final int[] N_CONSUMERS_ARR = {
-      1, 3, 5, 7, 9
+      1, 3, 5, 7
   };
 
   private static final int[] BUFFER_SIZE_ARR = {
-      10, 50, 100
+      10, 50
   };
 
   private static final int[] BUFFER_OPS_ARR = {
-      20000
+      15000
   };
 
   private static final int[] EXTRA_TASK_REPEATS = {
-      500, 1000, 2000
+      50, 100, 250, 500
   };
 
   private static final ConsumerFactory[] CONSUMER_FACTORY_ARR = {
@@ -152,22 +145,33 @@ private static final int[] N_PRODUCERS_ARR = {
     Arrays.fill(readBuffer, '$');
 
     int charsRead;
-    try {
-      FileReader configReader = new FileReader(config);
+    try (FileReader configReader = new FileReader(config)) {
       charsRead = configReader.read(readBuffer);
     } catch (IOException e) {
       e.printStackTrace();
       throw e;
     }
 
+    StringBuilder numberBuilder = new StringBuilder(charsRead);
+
     for (int i = 0; i < charsRead; ++i) {
-      dataFile.append(readBuffer[i]);
+      numberBuilder.append(readBuffer[i]);
     }
 
-    dataFile.append(".txt");
+    String number = numberBuilder.toString();
+
+    dataFile.append(number).append(".txt");
+
+    // zwiększenie licznika w pliku
+
+    int numberAsInt = Integer.parseInt(number);
+
+    String incrementedNumber = Integer.toString(++numberAsInt);
+
+    try (FileWriter configWriter = new FileWriter(config)) {
+      configWriter.write(incrementedNumber);
+    }
 
     return dataFile.toString();
   }
-
-
 }
