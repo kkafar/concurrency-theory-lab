@@ -13,7 +13,7 @@ public class Main {
   }
 
   public Main() {
-    final One2OneChannelInt communicationChannel = new One2OneChannelInt();
+    final One2OneChannelInt communicationChannel = Channel.one2oneInt();
 
     CSProcess[] procList = {
         new Producer(communicationChannel),
@@ -21,6 +21,6 @@ public class Main {
     };
 
     Parallel parallel = new Parallel(procList);
-
+    parallel.run();
   }
 }
