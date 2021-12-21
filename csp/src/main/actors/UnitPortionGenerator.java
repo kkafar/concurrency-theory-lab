@@ -1,6 +1,6 @@
 package main.actors;
 
-public class SinglePortionGenerator implements PortionGenerator {
+public class UnitPortionGenerator implements PortionGenerator {
 
   @Override
   public int generatePortion() {
