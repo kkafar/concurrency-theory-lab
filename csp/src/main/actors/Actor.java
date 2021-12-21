@@ -2,22 +2,32 @@ package main.actors;
 
 import main.buffer.Controller;
 import main.common.CompletedOperationCountTracker;
-import org.jcsp.lang.CSProcess;
-import org.jcsp.lang.Channel;
-import org.jcsp.lang.One2OneChannel;
+import org.jcsp.lang.*;
 
 abstract public class Actor implements CompletedOperationCountTracker, CSProcess {
   protected int mCompletedOperations;
   protected final PortionGenerator mPortionGenerator;
-  protected One2OneChannel mChannel;
+  protected final AltingChannelInput mServerInput;
+  protected final ChannelOutput mServerOutput;
+  protected final AltingChannelInput mBufferInput;
+  protected final ChannelOutput mBufferOutput;
+
+  protected boolean mActionPermissionGranted;
 
 
-  public Actor(final One2OneChannel communicationChannel,
+  public Actor(final AltingChannelInput serverInput,
+               final ChannelOutput serverOutput,
+               final AltingChannelInput bufferInput,
+               final ChannelOutput bufferOutput,
                final PortionGeneratorFactory portionGeneratorFactory
   ) {
     mCompletedOperations = 0;
     mPortionGenerator = portionGeneratorFactory.create();
-    mChannel = communicationChannel;
+    mServerInput = serverInput;
+    mServerOutput = serverOutput;
+    mBufferInput = bufferInput;
+    mBufferOutput = bufferOutput;
+    mActionPermissionGranted = false;
   }
 
   @Override
@@ -25,9 +35,17 @@ abstract public class Actor implements CompletedOperationCountTracker, CSProcess
     return mCompletedOperations;
   }
 
-  public One2OneChannel getChannel() {
-    return mChannel;
-  }
+//  public ChannelOutput getBufferOutput() {
+//    return mBufferOutput;
+//  }
+//
+//  public AltingChannelInput getBufferInput() {
+//    return mBufferInput;
+//  }
+//
+//  public ChannelOutput getServerOutput() {
+//    return mServerOutput;
+//  }
 
   abstract public void run();
 }

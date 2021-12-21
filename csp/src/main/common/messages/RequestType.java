@@ -1,8 +1,6 @@
-package main.common.requests;
+package main.common.messages;
 
 public enum RequestType {
   PRODUCE,
   CONSUME,
-  REJECT,
-  ACCEPT;
 }
