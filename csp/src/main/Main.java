@@ -4,10 +4,7 @@ import main.actors.Consumer;
 import main.actors.Producer;
 import main.actors.SinglePortionGenerator;
 import main.buffer.Controller;
-import org.jcsp.lang.CSProcess;
-import org.jcsp.lang.Channel;
-import org.jcsp.lang.One2OneChannelInt; // TO JEST INTERFEJS A NIE IMPLEMENTACJA
-import org.jcsp.lang.Parallel;
+import org.jcsp.lang.*;
 
 import java.util.List;
 
@@ -22,7 +19,12 @@ public class Main {
     final Consumer[] consumers = new Consumer[nProducers];
     final Controller controller = new Controller();
 
-    final One2OneChannelInt communicationChannel = Channel.one2oneInt();
+    for (int i = 0; i < nProducers; ++i) {
+//      producers[i] = new Producer();
+    }
+
+
+    final One2OneChannel communicationChannel = Channel.one2one();
 
     CSProcess[] procList = {
         new Producer(communicationChannel, SinglePortionGenerator::new),

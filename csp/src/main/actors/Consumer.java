@@ -2,23 +2,19 @@ package main.actors;
 
 import main.common.CompletedOperationCountTracker;
 import org.jcsp.lang.CSProcess;
+import org.jcsp.lang.One2OneChannel;
 import org.jcsp.lang.One2OneChannelInt;
 
-public class Consumer implements CSProcess, CompletedOperationCountTracker {
-  private final One2OneChannelInt mCommunicationChannel;
-  private int mCompletedOperations;
-  private final PortionGenerator mPortionGenerator;
+public class Consumer extends Actor {
 
-  public Consumer(final One2OneChannelInt in,
+  public Consumer(final One2OneChannel communicationChannel,
                   final PortionGeneratorFactory portionGeneratorFactory
   ) {
-    mCommunicationChannel = in;
-    mCompletedOperations = 0;
-    mPortionGenerator = portionGeneratorFactory.create();
+    super(communicationChannel, portionGeneratorFactory);
   }
 
   public void run() {
-    System.out.println(mCommunicationChannel.in().read());
+    System.out.println(mConnection.in().read());
   }
 
   @Override
