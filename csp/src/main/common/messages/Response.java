@@ -1,27 +1,31 @@
 package main.common.messages;
 
+import main.buffer.Buffer;
+import main.common.HalfDuplexChannel;
 import org.jcsp.lang.One2OneChannel;
 
-public class Answer {
-  private final AnswerType mAnswerType;
-  private final RequestType mRequestType;
-  private final One2OneChannel mBus;
+public class Response {
+  private final IntentStatus mIntentStatus;
+  private final Buffer mBuffer;
+  private final HalfDuplexChannel mChannel;
 
-  public Answer(AnswerType answerType, RequestType requestType, One2OneChannel bus) {
-    mAnswerType = answerType;
-    mRequestType = requestType;
-    mBus = bus;
+
+  public Response(IntentStatus intentStatus, Buffer buffer, HalfDuplexChannel channel) {
+    mIntentStatus = intentStatus;
+    mBuffer = buffer;
+    mChannel = channel;
   }
 
-  public AnswerType getAnswerType() {
-    return mAnswerType;
+  public IntentStatus getIntentStatus() {
+    return mIntentStatus;
   }
 
-  public RequestType getRequestType() {
-    return mRequestType;
+  public Buffer getBuffer() {
+    return mBuffer;
   }
 
-  public One2OneChannel getCommunicationChannel() {
-    return mBus;
+  public HalfDuplexChannel getChannel() {
+    return mChannel;
   }
+
 }

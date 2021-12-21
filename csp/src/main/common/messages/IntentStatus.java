@@ -1,6 +1,6 @@
 package main.common.messages;
 
-public enum AnswerType {
-  POSITIVE,
-  NEGATIVE;
+public enum IntentStatus {
+  ACCEPTED,
+  REJECTED;
 }
