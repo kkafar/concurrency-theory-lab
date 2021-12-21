@@ -2,6 +2,7 @@ package main;
 
 import main.actors.Consumer;
 import main.actors.Producer;
+import main.actors.SinglePortionGenerator;
 import main.buffer.Controller;
 import org.jcsp.lang.CSProcess;
 import org.jcsp.lang.Channel;
@@ -24,8 +25,8 @@ public class Main {
     final One2OneChannelInt communicationChannel = Channel.one2oneInt();
 
     CSProcess[] procList = {
-        new Producer(communicationChannel),
-        new Consumer(communicationChannel)
+        new Producer(communicationChannel, SinglePortionGenerator::new),
+        new Consumer(communicationChannel, SinglePortionGenerator::new)
     };
 
     Parallel parallel = new Parallel(procList);
