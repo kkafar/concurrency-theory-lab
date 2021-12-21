@@ -3,14 +3,12 @@ package main.buffer;
 import main.common.CompletedOperationCountTracker;
 import org.jcsp.lang.CSProcess;
 
-public class Controller implements CSProcess, CompletedOperationCountTracker {
+public class Buffer implements CSProcess, CompletedOperationCountTracker {
   private int mCompletedOperations;
 
-  public Controller() {
+  public Buffer() {
     mCompletedOperations = 0;
   }
-
-
 
   @Override
   public void run() {
