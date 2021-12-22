@@ -82,11 +82,7 @@ abstract public class Actor implements CSProcess {
       sendRequestToBuffer(request);
       Confirmation confirmation = awaitBufferConfirmationForRequest(request);
 
-      if (confirmation.getOperationStatus() == OperationStatus.SUCCEEDED) {
-        mOperationCountTracker.reportCompletedOperation();
-      } else if (confirmation.getOperationStatus() == OperationStatus.FAILED) {
-        mOperationCountTracker.reportFailedOperation();
-      }
+      mOperationCountTracker.reportOperation(confirmation.getOperationStatus());
     }
   }
 }
