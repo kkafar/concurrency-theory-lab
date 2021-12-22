@@ -1,13 +1,5 @@
 package main;
 
-import main.actors.Consumer;
-import main.actors.Producer;
-import main.actors.UnitPortionGenerator;
-import main.buffer.Controller;
-import org.jcsp.lang.*;
-
-import java.util.List;
-
 public class Main {
   private static final int nProducers = 2;
   private static final int nConsumers = 2;
