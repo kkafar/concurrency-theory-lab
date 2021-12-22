@@ -1,47 +1,88 @@
 package main.buffer;
 
-import main.common.CompletedOperationCountTracker;
-import main.common.messages.Request;
+import main.common.HalfDuplexChannel;
+import main.common.OperationCountTracker;
+import main.common.messages.Confirmation;
+import main.common.messages.Notification;
+import main.common.messages.OperationStatus;
 import main.common.messages.RequestType;
 import org.jcsp.lang.*;
 
-public class Buffer implements CSProcess, CompletedOperationCountTracker {
-  private int mCompletedOperations;
+public class Buffer implements CSProcess {
   private final int mCapacity;
   private int mCurrentCapacity;
-  private final AltingChannelInput mServerInput;
-  private final ChannelOutput mServerOutput;
+  private final HalfDuplexChannel mChannelWithServer;
+
+  private final OperationCountTracker mOperationCountTracker;
 
 
-  public Buffer(final int capacity, final AltingChannelInput serverInput, final ChannelOutput serverOutput) {
-    mCompletedOperations = 0;
+  public Buffer(final int capacity,
+                final HalfDuplexChannel channelWithServer
+  ) {
     mCapacity = capacity;
     mCurrentCapacity = 0;
-    mServerInput = serverInput;
-    mServerOutput = serverOutput;
+    mOperationCountTracker = new OperationCountTracker();
+    mChannelWithServer = channelWithServer;
   }
 
   @Override
   public void run() {
-    Guard[] guard = {mServerInput};
+    Confirmation confirmation = null;
+    OperationStatus operationStatus;
+
+    Guard[] guard = {mChannelWithServer.readEndpointFor(this)};
     Alternative alternative = new Alternative(guard);
 
     while (true) {
       // nasłuchujemy na requesty od serwera
       alternative.select();
 
-      Request request = (Request) mServerInput.read();
+      Notification notification = (Notification) mChannelWithServer.readEndpointFor(this).read();
 
-      if (request.getType() == RequestType.CONSUME) {
+      if (notification.getRequestType() == RequestType.CONSUME) {
+        operationStatus = consume(notification.getResources());
+      } else {
+        operationStatus = produce(notification.getResources());
       }
 
+      confirmation = new Confirmation(operationStatus);
 
+      sendConfirmationToClient(confirmation, notification.getChannel().writeEndpointFor(this));
+      sendConfirmationToServer(confirmation);
+
+      mOperationCountTracker.reportOperation(operationStatus);
     }
 
   }
 
-  @Override
-  public int getCompletedOperations() {
-    return mCompletedOperations;
+  private boolean isConsumptionNotPossible(final int resources) {
+    return mCurrentCapacity < resources;
+  }
+
+  private boolean isProductionNotPossible(final int resources) {
+    return mCurrentCapacity + resources > mCapacity;
+  }
+
+  private OperationStatus consume(final int resources) {
+    if (isConsumptionNotPossible(resources)) {
+      return OperationStatus.FAILED;
+    }
+    mCurrentCapacity -= resources;
+    return OperationStatus.SUCCEEDED;
+  }
+
+  private OperationStatus produce(final int resources) {
+    if (isProductionNotPossible(resources)) {
+      return OperationStatus.FAILED;
+    }
+    mCurrentCapacity += resources;
+    return OperationStatus.SUCCEEDED;
+  }
+
+  private void sendConfirmationToClient(Confirmation confirmationForClient, ChannelOutput clientOutput) {
+    clientOutput.write(confirmationForClient);
+  }
+  private void sendConfirmationToServer(Confirmation confirmationForServer) {
+    mChannelWithServer.writeEndpointFor(this).write(confirmationForServer);
   }
 }
