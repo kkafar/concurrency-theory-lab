@@ -1,5 +1,7 @@
 package main.common;
 
+import main.common.messages.OperationStatus;
+
 public class OperationCountTracker {
   protected int mCompletedOperations;
   protected int mRejectedOperations;
@@ -33,5 +35,13 @@ public class OperationCountTracker {
 
   public void reportFailedOperation() {
     ++mFailedOperations;
+  }
+
+  public void reportOperation(OperationStatus operationStatus) {
+    switch (operationStatus) {
+      case SUCCEEDED -> ++mCompletedOperations;
+      case FAILED -> ++mFailedOperations;
+      default -> throw new IllegalArgumentException("Unsupported operation status");
+    }
   }
 }
