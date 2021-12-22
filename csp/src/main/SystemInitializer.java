@@ -4,91 +4,116 @@ import main.actors.Consumer;
 import main.actors.Producer;
 import main.actors.UnitPortionGenerator;
 import main.buffer.Buffer;
+import main.buffer.BufferSelector;
 import main.buffer.Controller;
-import org.jcsp.lang.Channel;
+import main.buffer.RoundRobinBufferSelector;
+import main.common.HalfDuplexChannel;
 import org.jcsp.lang.Parallel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SystemInitializer {
-  private final int mNProducers;
-  private final int mNConsumers;
-  private final int mNBuffers;
-  private final List<Integer> mBufferCapacities;
+  private final int mNumberOfProducers;
+  private final int mNumberOfConsumers;
+  private final int mNumberOfBuffers;
+  private final int[] mBufferCapacities;
 
   private final Producer[] mProducers;
   private final Consumer[] mConsumers;
   private final Buffer[] mBuffers;
   private final Controller mController;
 
-  // kanały komunikacji
+  private final HalfDuplexChannel[] mClientServerChannels;
+  private final HalfDuplexChannel[] mBufferServerChannels;
 
 
   public SystemInitializer(
       final int nProducers,
       final int nConsumers,
       final int nBuffers,
-      final List<Integer> bufferCapacities
+      final int[] bufferCapacities
   ) {
-    mNProducers = nProducers;
-    mNConsumers = nConsumers;
-    mNBuffers = nBuffers;
+    mNumberOfProducers = nProducers;
+    mNumberOfConsumers = nConsumers;
+    mNumberOfBuffers = nBuffers;
     mBufferCapacities = bufferCapacities;
 
-    assert mBufferCapacities.size() == mNBuffers || mBufferCapacities.size() == 1;
+    assert mBufferCapacities.length == mNumberOfBuffers || mBufferCapacities.length == 1;
 
-    mProducers = new Producer[mNProducers];
-    mConsumers = new Consumer[mNConsumers];
-    mBuffers = new Buffer[mNBuffers];
+    mProducers = new Producer[mNumberOfProducers];
+    mConsumers = new Consumer[mNumberOfConsumers];
+    mBuffers = new Buffer[mNumberOfBuffers];
 
     initProducers();
     initConsumers();
     initBuffers();
 
-    mController = new Controller(mNProducers, mNConsumers, mNBuffers);
+    BufferSelector bufferSelector = new RoundRobinBufferSelector(mBuffers, mBufferCapacities);
 
-    registerBuffersToController();
-    registerActorsToController();
+    mController = new Controller(bufferSelector);
+
+    mClientServerChannels = new HalfDuplexChannel[mNumberOfProducers + mNumberOfConsumers];
+    mBufferServerChannels = new HalfDuplexChannel[mNumberOfBuffers];
+
+    createConnectionChannels();
   }
 
   private void initProducers() {
-    for (int i = 0; i < mNProducers; ++i) {
+    for (int i = 0; i < mNumberOfProducers; ++i) {
+      mProducers[i] = new Producer(UnitPortionGenerator::new);
     }
   }
 
   private void initConsumers() {
-    for (int i = 0; i < mNConsumers; ++i) {
+    for (int i = 0; i < mNumberOfConsumers; ++i) {
+      mConsumers[i] = new Consumer(UnitPortionGenerator::new);
+    }
+  }
+
+  private void initClients() {
+    for (int i = 0; i < mNumberOfProducers; ++i) {
+      mProducers[i] = new Producer(UnitPortionGenerator::new);
+    }
+    for (int i = 0; i < mNumberOfConsumers; ++i) {
+      mConsumers[i] = new Consumer(UnitPortionGenerator::new);
     }
   }
 
   private void initBuffers() {
-    if (mBufferCapacities.size() == 1) {
-      for (int i = 0; i < mNBuffers; ++i) {
+    if (mBufferCapacities.length == 1) {
+      for (int i = 0; i < mNumberOfBuffers; ++i) {
+        mBuffers[i] = new Buffer(mBufferCapacities[0], i);
       }
     } else {
-      for (int i = 0; i < mNBuffers; ++i) {
+      for (int i = 0; i < mNumberOfBuffers; ++i) {
+        mBuffers[i] = new Buffer(mBufferCapacities[i], i);
       }
     }
   }
 
-  private void registerBuffersToController() {
-    mBuffers.forEach(buffer ->
-      mController.registerBuffer(buffer, buffer.getChannel())
-    );
-  }
-
-  private void registerActorsToController() {
-    mConsumers.forEach(consumer -> mController.registerActor(consumer, consumer.getChannel()));
-    mProducers.forEach(producer -> mController.registerActor(producer, producer.getChannel()));
+  private void createConnectionChannels() {
+    for (int i = 0; i < mNumberOfProducers; ++i) {
+      mClientServerChannels[i] = new HalfDuplexChannel(mProducers[i], mController);
+      mProducers[i].setServerChannel(mClientServerChannels[i]);
+    }
+    for (int i = 0; i < mNumberOfConsumers; ++i) {
+      mClientServerChannels[i + mNumberOfProducers] = new HalfDuplexChannel(mConsumers[i], mController);
+      mConsumers[i].setServerChannel(mClientServerChannels[i + mNumberOfProducers]);
+    }
+    for (int i = 0; i < mNumberOfBuffers; ++i) {
+      mBufferServerChannels[i] = new HalfDuplexChannel(mBuffers[i], mController);
+      mBuffers[i].setServerChannel(mBufferServerChannels[i]);
+    }
+    mController.setClientChannels(mClientServerChannels);
+    mController.setBufferChannels(mBufferServerChannels);
   }
 
   public Parallel getSystem() {
     Parallel system = new Parallel();
+
     system.addProcess(mController);
-    mConsumers.forEach(system::addProcess);
-    mProducers.forEach(system::addProcess);
-    mBuffers.forEach(system::addProcess);
+    system.addProcess(mProducers);
+    system.addProcess(mConsumers);
+    system.addProcess(mBuffers);
+
     return system;
   }
 }

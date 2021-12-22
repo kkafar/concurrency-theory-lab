@@ -1,23 +1,30 @@
 package main.common.messages;
 
-import main.actors.Actor;
+import main.actors.Client;
 import main.common.HalfDuplexChannel;
 
 public class Notification {
   private final RequestType mRequestType;
   private final int mResources;
-  private final Actor mActor;
+  private final Client mClient;
   private final HalfDuplexChannel mChannel;
 
   public Notification(
       RequestType requestType,
       int resources,
-      Actor actor,
+      Client client,
       HalfDuplexChannel channel
   ) {
     mRequestType = requestType;
     mResources = resources;
-    mActor = actor;
+    mClient = client;
+    mChannel = channel;
+  }
+
+  public Notification(Intent intent, HalfDuplexChannel channel) {
+    mRequestType = intent.getRequestType();
+    mResources = intent.getResources();
+    mClient = intent.getClient();
     mChannel = channel;
   }
 
@@ -29,8 +36,8 @@ public class Notification {
     return mResources;
   }
 
-  public Actor getActor() {
-    return mActor;
+  public Client getActor() {
+    return mClient;
   }
 
   public HalfDuplexChannel getChannel() {

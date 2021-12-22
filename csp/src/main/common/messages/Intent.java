@@ -1,20 +1,20 @@
 package main.common.messages;
 
-import main.actors.Actor;
+import main.actors.Client;
 
 public class Intent {
   private final RequestType mRequestType;
   private final int mResources;
-  private final Actor mActor;
+  private final Client mClient;
 
   public Intent(
       RequestType requestType,
       int resources,
-      Actor actor
+      Client client
   ) {
     mResources = resources;
     mRequestType = requestType;
-    mActor = actor;
+    mClient = client;
   }
 
   public RequestType getRequestType() {
@@ -25,7 +25,7 @@ public class Intent {
     return mResources;
   }
 
-  public Actor getActor() {
-    return mActor;
+  public Client getClient() {
+    return mClient;
   }
 }

@@ -1,12 +1,11 @@
 package main.actors;
 
-import main.buffer.Buffer;
 import main.common.HalfDuplexChannel;
 import main.common.messages.RequestType;
 
-public class Consumer extends Actor {
-  public Consumer(HalfDuplexChannel channelWithServer, PortionGeneratorFactory portionGeneratorFactory) {
-    super(channelWithServer, portionGeneratorFactory);
+public class Consumer extends Client {
+  public Consumer(PortionGeneratorFactory portionGeneratorFactory) {
+    super(portionGeneratorFactory);
   }
 
   @Override

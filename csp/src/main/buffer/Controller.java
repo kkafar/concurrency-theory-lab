@@ -1,162 +1,106 @@
 package main.buffer;
 
-import main.common.CompletedOperationCountTracker;
-import main.common.messages.Answer;
-import main.common.messages.AnswerType;
-import main.common.messages.Request;
-import main.common.messages.RequestType;
+import main.common.OperationCountTracker;
+import main.common.HalfDuplexChannel;
+import main.common.messages.*;
 import org.jcsp.lang.*;
-import org.jcsp.net.settings.Req;
 
-import java.util.Arrays;
+public class Controller implements CSProcess {
+  private HalfDuplexChannel[] mClientChannels;
+  private HalfDuplexChannel[] mBufferChannels;
 
-public class Controller implements CSProcess, CompletedOperationCountTracker {
-  private int mCompletedOperations;
+  private int mNumberOfBuffers;
+  private int mNumberOfClients;
 
-  private final AltingChannelInput[] mActorInputs;
-  private final ChannelOutput[] mActorOutput;
-  private final AltingChannelInput[] mBufferInputs;
-  private final ChannelOutput[] mBufferOutputs;
+  private final OperationCountTracker mOperationCountTracker;
+  private final BufferSelector mBufferSelector;
 
-  private final boolean[] mBufferStatus; // true - obecnie realizuje operacje
-  private final int[] mCurrentBufferCapacities;
-
-  private int mConsumptionBufferIndex;
-  private int mProductionBufferIndex;
-  private final int[] mBufferMaxCapacities;
-
-
-  public Controller(AltingChannelInput[] actorInputs,
-                    ChannelOutput[] actorOutputs,
-                    AltingChannelInput[] bufferInputs,
-                    ChannelOutput[] bufferOutputs,
-                    int[] bufferMaxCapacities
+  public Controller(
+      BufferSelector bufferSelector
   ) {
-    mCompletedOperations = 0;
-    mActorInputs = actorInputs;
-    mActorOutput = actorOutputs;
-    mBufferInputs = bufferInputs;
-    mBufferOutputs = bufferOutputs;
+    mOperationCountTracker = new OperationCountTracker();
+    mBufferSelector = bufferSelector;
+    mClientChannels = null;
+    mBufferChannels = null;
+  }
 
-    assert bufferInputs.length == bufferOutputs.length;
+  public void setClientChannels(HalfDuplexChannel[] channels) {
+    mClientChannels = channels;
+    mNumberOfClients = channels.length;
+  }
 
-    mBufferStatus = new boolean[bufferInputs.length];
-    mCurrentBufferCapacities = new int[bufferInputs.length];
+  public void setBufferChannels(HalfDuplexChannel[] channels) {
+    mBufferChannels = channels;
+    mNumberOfBuffers = channels.length;
+  }
 
-    Arrays.fill(mBufferStatus, false);
-    Arrays.fill(mCurrentBufferCapacities, 0);
-
-    mConsumptionBufferIndex = 0;
-    mProductionBufferIndex = 0;
-
-    mBufferMaxCapacities = bufferMaxCapacities;
+  private AltingChannelInput[] serializeInputs() {
+    AltingChannelInput[] inputs = new AltingChannelInput[mNumberOfClients + mNumberOfBuffers];
+    for (int i = 0; i < mNumberOfClients; ++i) {
+      inputs[i] = mClientChannels[i].readEndpointFor(this);
+    }
+    for (int i = 0; i < mNumberOfBuffers; ++i) {
+      inputs[i + mNumberOfClients] = mBufferChannels[i].readEndpointFor(this);
+    }
+    return inputs;
   }
 
   @Override
   public void run() {
-    Guard[] guard = new Guard[mActorInputs.length + mBufferInputs.length];
-    for (int i = 0; i < mActorInputs.length; ++i) {
-      guard[i] = mActorInputs[i];
-    }
-    for (int i = 0; i < mBufferInputs.length; ++i) {
-      guard[i + mActorInputs.length] = mBufferInputs[i];
-    }
+    assert mBufferChannels != null && mClientChannels != null;
 
-    Alternative alternative = new Alternative(guard);
+    int guardIndex;
+    BufferEntryPair bufferEntryPair;
+    IntentStatus intentStatus;
+    Response response;
+    Alternative alternative = new Alternative(serializeInputs());
+
     while (true) {
-      int guardIndex = alternative.fairSelect();
+      guardIndex = alternative.fairSelect();
 
-      if (guardIndex < mActorInputs.length) { // mamy request od aktora
-        Request request = (Request) mActorInputs[guardIndex].read();
+      if (guardIndex < mNumberOfClients) { // wiadomość od klienta
+        int index = guardIndex;
 
-        if (request.getType() == RequestType.PRODUCE) {
-          int productionBuffer = findBufferForProduction();
-          if (productionBuffer < 0) {
-            mActorOutput[guardIndex].write(new Answer(AnswerType.NEGATIVE, null, null));
-          } else {
-            // rezerwujemy buffer
-            mBufferStatus[productionBuffer] = true;
-            mProductionBufferIndex = (productionBuffer + 1) % mBufferInputs.length;
+        Intent intent = (Intent) mClientChannels[index].readEndpointFor(this).read();
 
-            One2OneChannel communicationChannel = Channel.one2one();
-
-            mBufferOutputs[productionBuffer].write(
-                new Request(RequestType.PRODUCE, communicationChannel, request.getPortionSize())
-            );
-            mActorOutput[guardIndex].write(
-                new Answer(AnswerType.POSITIVE, null, communicationChannel)
-            );
-          }
-        } else if (request.getType() == RequestType.CONSUME) {
-          int consumptionBuffer = findBufferForConsumption();
-          if (consumptionBuffer < 0) {
-            mActorOutput[guardIndex].write(new Answer(AnswerType.NEGATIVE, null, null));
-          } else {
-            // rezerwujemy buffer
-            mBufferStatus[consumptionBuffer] = true;
-            mConsumptionBufferIndex = (consumptionBuffer + 1) % mBufferInputs.length;
-
-            One2OneChannel communicationChannel = Channel.one2one();
-
-            mBufferOutputs[consumptionBuffer].write(
-                new Request(RequestType.CONSUME, communicationChannel, request.getPortionSize())
-            );
-
-            mActorOutput[guardIndex].write(
-                new Answer(AnswerType.POSITIVE, null, communicationChannel)
-            );
-
-          }
+        bufferEntryPair = mBufferSelector.getBufferForOperation(intent.getRequestType(),
+                                                                          intent.getResources());
+        if (bufferEntryPair == null) {
+          intentStatus = IntentStatus.REJECTED;
+          response = new Response(intentStatus, null, null);
         } else {
-          throw new UnsupportedOperationException("Unsupported request type");
+          intentStatus = IntentStatus.ACCEPTED;
+          HalfDuplexChannel clientBufferChannel = new HalfDuplexChannel(
+              intent.getClient(),
+              bufferEntryPair.getBufferID()
+          );
+          response = new Response(
+              intentStatus,
+              bufferEntryPair.getBuffer(),
+              clientBufferChannel
+          );
+          mBufferSelector.lockBuffer(bufferEntryPair.getBufferID());
+          sendNotificationToBuffer(new Notification(intent, clientBufferChannel), bufferEntryPair.getBufferID());
         }
-      } else {  // mamy reakcję bufora
-        int i = guardIndex - mActorInputs.length;
-        Answer answer = (Answer) mBufferInputs[i].read();
-        if (answer.getAnswerType() == AnswerType.POSITIVE) {
-          mBufferStatus[i] = false;
-          ++mCompletedOperations;
-          if (answer.getRequestType() == RequestType.CONSUME) {
-            mCurrentBufferCapacities[i]--;
-          } else {
-            mCurrentBufferCapacities[i]++;
-          }
-        } else {
-          System.out.println("Negative buffer answer");
-        }
+
+        sendResponseToClient(response, index);
+      } else { // wiadomość od bufora
+        int index = guardIndex - mNumberOfClients;
+        Confirmation confirmation = (Confirmation) mBufferChannels[index].readEndpointFor(this).read();
+
+        // Regardless exact operation status, we report that buffer is now free
+        mBufferSelector.unlockBuffer(index);
+
+        mOperationCountTracker.reportOperation(confirmation.getOperationStatus());
       }
     }
   }
 
-  private int findBufferForConsumption() {
-    int checkedElems = 0;
-    int iter = mConsumptionBufferIndex;
-    while (checkedElems < mBufferInputs.length) {
-      if (mBufferStatus[iter] && mCurrentBufferCapacities[iter] > 0) {
-        return iter;
-      }
-      iter = (iter + 1) % mBufferInputs.length;
-      ++checkedElems;
-    }
-
-    return -1; // nie udało się znaleźć
+  private void sendNotificationToBuffer(Notification notification, int bufferID) {
+    mBufferChannels[bufferID].writeEndpointFor(this).write(notification);
   }
 
-  private int findBufferForProduction() {
-    int checkedElemns = 0;
-    int iter = mProductionBufferIndex;
-    while (checkedElemns < mBufferInputs.length) {
-      if (mBufferStatus[iter] && mCurrentBufferCapacities[iter] < mBufferMaxCapacities[iter]) {
-        return iter;
-      }
-      iter = (iter + 1) % mBufferInputs.length;
-      ++checkedElemns;
-    }
-    return -1; // nie udało się znaleźć
-  }
-
-  @Override
-  public int getCompletedOperations() {
-    return mCompletedOperations;
+  private void sendResponseToClient(Response response, int clientID) {
+    mClientChannels[clientID].writeEndpointFor(this).write(response);
   }
 }

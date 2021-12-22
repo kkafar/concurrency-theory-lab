@@ -11,22 +11,31 @@ import org.jcsp.lang.*;
 public class Buffer implements CSProcess {
   private final int mCapacity;
   private int mCurrentCapacity;
-  private final HalfDuplexChannel mChannelWithServer;
+  private HalfDuplexChannel mChannelWithServer;
 
   private final OperationCountTracker mOperationCountTracker;
 
+  private final int mID;
+
 
   public Buffer(final int capacity,
-                final HalfDuplexChannel channelWithServer
+                final int id
   ) {
     mCapacity = capacity;
     mCurrentCapacity = 0;
     mOperationCountTracker = new OperationCountTracker();
-    mChannelWithServer = channelWithServer;
+    mChannelWithServer = null;
+    mID = id;
+  }
+
+  public void setServerChannel(HalfDuplexChannel channel) {
+    mChannelWithServer = channel;
   }
 
   @Override
   public void run() {
+    assert mChannelWithServer != null;
+
     Confirmation confirmation = null;
     OperationStatus operationStatus;
 
@@ -45,10 +54,10 @@ public class Buffer implements CSProcess {
         operationStatus = produce(notification.getResources());
       }
 
-      confirmation = new Confirmation(operationStatus);
+      confirmation = new Confirmation(operationStatus, mID);
 
-      sendConfirmationToClient(confirmation, notification.getChannel().writeEndpointFor(this));
       sendConfirmationToServer(confirmation);
+      sendConfirmationToClient(confirmation, notification.getChannel().writeEndpointFor(this));
 
       mOperationCountTracker.reportOperation(operationStatus);
     }
@@ -64,6 +73,7 @@ public class Buffer implements CSProcess {
   }
 
   private OperationStatus consume(final int resources) {
+    System.out.println("consume");
     if (isConsumptionNotPossible(resources)) {
       return OperationStatus.FAILED;
     }
@@ -72,6 +82,7 @@ public class Buffer implements CSProcess {
   }
 
   private OperationStatus produce(final int resources) {
+    System.out.println("produce");
     if (isProductionNotPossible(resources)) {
       return OperationStatus.FAILED;
     }

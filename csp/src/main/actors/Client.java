@@ -5,27 +5,32 @@ import main.common.HalfDuplexChannel;
 import main.common.messages.*;
 import org.jcsp.lang.*;
 
-abstract public class Actor implements CSProcess {
+abstract public class Client implements CSProcess {
 
   protected final PortionGenerator mPortionGenerator;
 
-  protected final HalfDuplexChannel mChannelWithServer;
+  protected HalfDuplexChannel mChannelWithServer;
   protected One2OneChannel mOperationChannel;
 
   protected boolean mOperationPermissionGranted;
 
   protected OperationCountTracker mOperationCountTracker;
 
-  public Actor(HalfDuplexChannel channelWithServer, PortionGeneratorFactory portionGeneratorFactory) {
+  public Client(PortionGeneratorFactory portionGeneratorFactory) {
     mPortionGenerator = portionGeneratorFactory.create();
-    mChannelWithServer = channelWithServer;
+    mChannelWithServer = null;
     mOperationPermissionGranted = false;
     mOperationChannel = null;
     mOperationCountTracker = new OperationCountTracker();
   }
 
-  abstract protected RequestType getRequestType();
+  public void setServerChannel(HalfDuplexChannel channel) {
+    mChannelWithServer = channel;
+  }
 
+
+
+  abstract protected RequestType getRequestType();
 
   protected boolean isPermissionGranted() {
     return mOperationPermissionGranted;
@@ -56,7 +61,10 @@ abstract public class Actor implements CSProcess {
     return ((Confirmation) request.getChannel().readEndpointFor(this).read());
   }
 
+  @Override
   public void run() {
+    assert mChannelWithServer != null;
+
     Intent intent;
     Response serverResponseForIntent = null;
 
