@@ -5,8 +5,6 @@ import org.jcsp.lang.Channel;
 import org.jcsp.lang.ChannelOutput;
 import org.jcsp.lang.One2OneChannel;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class HalfDuplexChannel {
   private final One2OneChannel mMasterToSlave;
@@ -14,7 +12,6 @@ public class HalfDuplexChannel {
 
   private final Object mMaster, mSlave;
 
-//  private final Map<Object, One2OneChannel> map;
 
   public HalfDuplexChannel(Object master, Object slave) {
     assert master != null && slave != null;
@@ -22,7 +19,18 @@ public class HalfDuplexChannel {
     mSlave = slave;
     mMasterToSlave = Channel.one2one();
     mSlaveToMaster = Channel.one2one();
-//    map = Map.of(master, mMasterToSlave, slave, mSlaveToMaster);
+  }
+
+  public HalfDuplexChannel(
+      Object master,
+      One2OneChannel masterToSlave,
+      Object slave,
+      One2OneChannel slaveToMaster
+  ) {
+    mMaster = master;
+    mSlave = slave;
+    mMasterToSlave = masterToSlave;
+    mSlaveToMaster = slaveToMaster;
   }
 
   public ChannelOutput writeEndpointFor(Object who) {
