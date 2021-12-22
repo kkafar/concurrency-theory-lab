@@ -1,13 +1,14 @@
 package main.common.messages;
 
+import main.common.HalfDuplexChannel;
 import org.jcsp.lang.One2OneChannel;
 
 public class Request {
   private final RequestType mType;
   private final int mPortionSize;
-  private final One2OneChannel mCommunicationChannel;
+  private final HalfDuplexChannel mCommunicationChannel;
 
-  public Request(final RequestType type, One2OneChannel communicationChannel, final int portionSize) {
+  public Request(final RequestType type, HalfDuplexChannel communicationChannel, final int portionSize) {
     mType = type;
     mPortionSize = portionSize;
     mCommunicationChannel = communicationChannel;
@@ -21,7 +22,7 @@ public class Request {
     return mPortionSize;
   }
 
-  public One2OneChannel getChannel() {
+  public HalfDuplexChannel getChannel() {
     return mCommunicationChannel;
   }
 }

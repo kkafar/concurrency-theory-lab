@@ -7,7 +7,6 @@ public class Intent {
   private final int mResources;
   private final Actor mActor;
 
-
   public Intent(
       RequestType requestType,
       int resources,
@@ -17,7 +16,6 @@ public class Intent {
     mRequestType = requestType;
     mActor = actor;
   }
-
 
   public RequestType getRequestType() {
     return mRequestType;
