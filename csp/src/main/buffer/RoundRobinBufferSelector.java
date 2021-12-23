@@ -1,7 +1,6 @@
 package main.buffer;
 
 import main.common.messages.RequestType;
-import java.util.LinkedList;
 
 public class RoundRobinBufferSelector extends BufferSelector {
   private int mProductionBufferIndex;

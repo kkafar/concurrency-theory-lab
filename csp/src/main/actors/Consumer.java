@@ -1,6 +1,5 @@
 package main.actors;
 
-import main.common.HalfDuplexChannel;
 import main.common.messages.RequestType;
 
 public class Consumer extends Client {
