@@ -58,6 +58,8 @@ public class Controller implements CSProcess {
     while (true) {
       guardIndex = alternative.fairSelect();
 
+      System.out.println("Controller: selected " + guardIndex + " from alternative");
+
       if (guardIndex < mNumberOfClients) { // wiadomość od klienta
         int index = guardIndex;
 
@@ -79,7 +81,7 @@ public class Controller implements CSProcess {
               bufferEntryPair.getBuffer(),
               clientBufferChannel
           );
-          mBufferSelector.lockBuffer(bufferEntryPair.getBufferID());
+          mBufferSelector.lockBuffer(bufferEntryPair.getBufferID(), intent.getRequestType());
           sendNotificationToBuffer(new Notification(intent, clientBufferChannel), bufferEntryPair.getBufferID());
         }
 
@@ -97,10 +99,12 @@ public class Controller implements CSProcess {
   }
 
   private void sendNotificationToBuffer(Notification notification, int bufferID) {
+    System.out.println("Controller: Sending notification to buffer " + bufferID);
     mBufferChannels[bufferID].writeEndpointFor(this).write(notification);
   }
 
   private void sendResponseToClient(Response response, int clientID) {
+    System.out.println("Controller: Sending response to client " + clientID);
     mClientChannels[clientID].writeEndpointFor(this).write(response);
   }
 }

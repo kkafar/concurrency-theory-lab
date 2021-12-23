@@ -33,17 +33,22 @@ abstract public class BufferSelector {
   }
 
   protected boolean isProductionPossibleForBufferAt(int i, int resources) {
-    return mBufferCapacities[i] - mCurrentBufferCapacities[i] >= resources;
+    return mBufferCapacities[i] - mCurrentBufferCapacities[i] >= resources && !mBufferStatus[i];
   }
 
   protected boolean isConsumptionPossibleForBufferAt(int i, int resources) {
-    return mCurrentBufferCapacities[i] >= resources;
+    return mCurrentBufferCapacities[i] >= resources && !mBufferStatus[i];
   }
 
   abstract public BufferEntryPair getBufferForOperation(RequestType requestType, int resources);
 
-  public void lockBuffer(int i) {
+  public void lockBuffer(int i, RequestType requestType) {
     mBufferStatus[i] = true;
+    if (requestType == RequestType.CONSUME) {
+      mCurrentBufferCapacities[i]--;
+    } else {
+      mCurrentBufferCapacities[i]++;
+    }
   }
 
   public void unlockBuffer(int i) {

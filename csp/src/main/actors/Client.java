@@ -28,8 +28,6 @@ abstract public class Client implements CSProcess {
     mChannelWithServer = channel;
   }
 
-
-
   abstract protected RequestType getRequestType();
 
   protected boolean isPermissionGranted() {
@@ -73,12 +71,15 @@ abstract public class Client implements CSProcess {
 
       consumePermissionGrant();
       while (!isPermissionGranted()) {
+        System.out.println("Client: Sending intent to server: " + intent.getRequestType().toString());
         sendIntentToServer(intent);
         serverResponseForIntent = awaitServerResponseForIntent();
 
         if (serverResponseForIntent.getIntentStatus() == IntentStatus.REJECTED) {
+          System.out.println("Client: Intent rejected by server: " + intent.getRequestType().toString());
           mOperationCountTracker.reportRejectedOperation();
         } else if (serverResponseForIntent.getIntentStatus() == IntentStatus.ACCEPTED) {
+          System.out.println("Client: Intent accepted by server: " + intent.getRequestType().toString());
           acquirePermissionGrant();
         } else {
           throw new IllegalArgumentException("Unknown intent status in server response");
@@ -86,6 +87,7 @@ abstract public class Client implements CSProcess {
       }
 
       // wykonanie operacji na buforze
+      System.out.println("Client: Sending request to buffer: " + intent.getRequestType().toString());
       Request request = new Request(getRequestType(), serverResponseForIntent.getChannel(), intent.getResources());
       sendRequestToBuffer(request);
       Confirmation confirmation = awaitBufferConfirmationForRequest(request);

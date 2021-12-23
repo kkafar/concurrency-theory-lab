@@ -5,7 +5,6 @@ import org.jcsp.lang.Channel;
 import org.jcsp.lang.ChannelOutput;
 import org.jcsp.lang.One2OneChannel;
 
-
 public class HalfDuplexChannel {
   private final One2OneChannel mMasterToSlave;
   private final One2OneChannel mSlaveToMaster;
@@ -39,7 +38,7 @@ public class HalfDuplexChannel {
     } else if (who.equals(mSlave)) {
       return mSlaveToMaster.out();
     } else {
-      throw new IllegalArgumentException("Passed object is neither master or slave!");
+      throw new IllegalArgumentException("Passed object is neither master nor slave!");
     }
   }
 
@@ -49,7 +48,7 @@ public class HalfDuplexChannel {
     } else if (who.equals(mSlave)) {
       return mMasterToSlave.in();
     } else {
-      throw new IllegalArgumentException("Passed object is neither master or slave!");
+      throw new IllegalArgumentException("Passed object is neither master nor slave!");
     }
   }
 }

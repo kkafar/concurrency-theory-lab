@@ -2,10 +2,7 @@ package main.buffer;
 
 import main.common.HalfDuplexChannel;
 import main.common.OperationCountTracker;
-import main.common.messages.Confirmation;
-import main.common.messages.Notification;
-import main.common.messages.OperationStatus;
-import main.common.messages.RequestType;
+import main.common.messages.*;
 import org.jcsp.lang.*;
 
 public class Buffer implements CSProcess {
@@ -45,10 +42,13 @@ public class Buffer implements CSProcess {
     while (true) {
       // nasłuchujemy na requesty od serwera
       alternative.select();
-
       Notification notification = (Notification) mChannelWithServer.readEndpointFor(this).read();
+      System.out.println("Buffer " + mID + ": Received notification from server");
 
-      if (notification.getRequestType() == RequestType.CONSUME) {
+      Request clientRequest = awaitForRequestFromClient(notification.getChannel());
+      System.out.println("Buffer " + mID + ": Received client request");
+
+      if (clientRequest.getType() == RequestType.CONSUME) {
         operationStatus = consume(notification.getResources());
       } else {
         operationStatus = produce(notification.getResources());
@@ -61,7 +61,6 @@ public class Buffer implements CSProcess {
 
       mOperationCountTracker.reportOperation(operationStatus);
     }
-
   }
 
   private boolean isConsumptionNotPossible(final int resources) {
@@ -73,10 +72,11 @@ public class Buffer implements CSProcess {
   }
 
   private OperationStatus consume(final int resources) {
-    System.out.println("consume");
     if (isConsumptionNotPossible(resources)) {
+      System.out.println("Buffer: Consumption failed");
       return OperationStatus.FAILED;
     }
+    System.out.println("Buffer: Consumption succeeded");
     mCurrentCapacity -= resources;
     return OperationStatus.SUCCEEDED;
   }
@@ -84,16 +84,27 @@ public class Buffer implements CSProcess {
   private OperationStatus produce(final int resources) {
     System.out.println("produce");
     if (isProductionNotPossible(resources)) {
+      System.out.println("Buffer: Production failed");
       return OperationStatus.FAILED;
     }
+    System.out.println("Buffer: Production succeeded");
     mCurrentCapacity += resources;
     return OperationStatus.SUCCEEDED;
   }
 
   private void sendConfirmationToClient(Confirmation confirmationForClient, ChannelOutput clientOutput) {
+    System.out.println("Buffer " + mID + ": Sending confirmation to client");
     clientOutput.write(confirmationForClient);
   }
+
   private void sendConfirmationToServer(Confirmation confirmationForServer) {
+    System.out.println("Buffer " + mID + ": Sending confirmation to server");
     mChannelWithServer.writeEndpointFor(this).write(confirmationForServer);
   }
+
+  private Request awaitForRequestFromClient(HalfDuplexChannel requestChannel) {
+    System.out.println("Buffer " + mID + ": Awaiting for request from client");
+    return (Request) requestChannel.readEndpointFor(this).read();
+  }
+
 }
