@@ -33,16 +33,20 @@ abstract public class BufferSelector {
   }
 
   protected boolean isProductionPossibleForBufferAt(int i, int resources) {
-    return mBufferCapacities[i] - mCurrentBufferCapacities[i] >= resources && !mBufferStatus[i];
+    return mBufferCapacities[i] - mCurrentBufferCapacities[i] >= resources && !isBufferLocked(i);
   }
 
   protected boolean isConsumptionPossibleForBufferAt(int i, int resources) {
-    return mCurrentBufferCapacities[i] >= resources && !mBufferStatus[i];
+    return mCurrentBufferCapacities[i] >= resources && !isBufferLocked(i);
   }
 
   abstract public BufferEntryPair getBufferForOperation(RequestType requestType, int resources);
 
   public void lockBuffer(int i, RequestType requestType) {
+    System.out.println("BufferSelector: Lock buffer " + i);
+    if (mBufferStatus[i]) {
+      throw new IllegalStateException("BufferSelector: Buffer " + i + " already locked");
+    }
     mBufferStatus[i] = true;
     if (requestType == RequestType.CONSUME) {
       mCurrentBufferCapacities[i]--;
@@ -52,6 +56,14 @@ abstract public class BufferSelector {
   }
 
   public void unlockBuffer(int i) {
+    System.out.println("BufferSelector: Unlock buffer " + i);
+    if (!mBufferStatus[i]) {
+      throw new IllegalStateException("BufferSelector: Attempt to unlock not locked buffer " + i);
+    }
     mBufferStatus[i] = false;
+  }
+
+  private boolean isBufferLocked(int i) {
+    return mBufferStatus[i];
   }
 }

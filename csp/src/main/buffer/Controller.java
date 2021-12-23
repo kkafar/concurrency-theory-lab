@@ -50,14 +50,14 @@ public class Controller implements CSProcess {
     assert mBufferChannels != null && mClientChannels != null;
 
     int guardIndex;
-    BufferEntryPair bufferEntryPair;
+//    BufferEntryPair bufferEntryPair;
     IntentStatus intentStatus;
     Response response;
     Alternative alternative = new Alternative(serializeInputs());
 
     while (true) {
+      System.out.println("Controller: Entering alternative");
       guardIndex = alternative.fairSelect();
-
       System.out.println("Controller: selected " + guardIndex + " from alternative");
 
       if (guardIndex < mNumberOfClients) { // wiadomość od klienta
@@ -65,8 +65,8 @@ public class Controller implements CSProcess {
 
         Intent intent = (Intent) mClientChannels[index].readEndpointFor(this).read();
 
-        bufferEntryPair = mBufferSelector.getBufferForOperation(intent.getRequestType(),
-                                                                          intent.getResources());
+        BufferEntryPair bufferEntryPair = mBufferSelector.getBufferForOperation(intent.getRequestType(),
+                                                                intent.getResources());
         if (bufferEntryPair == null) {
           intentStatus = IntentStatus.REJECTED;
           response = new Response(intentStatus, null, null);
@@ -74,7 +74,7 @@ public class Controller implements CSProcess {
           intentStatus = IntentStatus.ACCEPTED;
           HalfDuplexChannel clientBufferChannel = new HalfDuplexChannel(
               intent.getClient(),
-              bufferEntryPair.getBufferID()
+              bufferEntryPair.getBuffer()
           );
           response = new Response(
               intentStatus,
@@ -88,6 +88,7 @@ public class Controller implements CSProcess {
         sendResponseToClient(response, index);
       } else { // wiadomość od bufora
         int index = guardIndex - mNumberOfClients;
+        System.out.println("Controller: Received message from buffer " + index);
         Confirmation confirmation = (Confirmation) mBufferChannels[index].readEndpointFor(this).read();
 
         // Regardless exact operation status, we report that buffer is now free
