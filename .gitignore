@@ -18,5 +18,7 @@ data
 # ios specific
 .DS_store
 
-docs-prep
+docs-prep/*
+
+test-module/*
 
