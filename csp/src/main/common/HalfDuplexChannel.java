@@ -38,7 +38,8 @@ public class HalfDuplexChannel {
     } else if (who.equals(mSlave)) {
       return mSlaveToMaster.out();
     } else {
-      throw new IllegalArgumentException("Passed object is neither master nor slave!");
+      throw new IllegalArgumentException("Passed object is neither master nor slave! Master: " +
+          mMaster.toString() + " Slave: " + mSlave.toString() + " Passed object: " + who.toString());
     }
   }
 
@@ -48,7 +49,8 @@ public class HalfDuplexChannel {
     } else if (who.equals(mSlave)) {
       return mMasterToSlave.in();
     } else {
-      throw new IllegalArgumentException("Passed object is neither master nor slave!");
+      throw new IllegalArgumentException("Passed object is neither master nor slave! Master: " +
+          mMaster.toString() + " Slave: " + mSlave.toString() + " Passed object: " + who.toString());
     }
   }
 }
