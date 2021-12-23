@@ -17,3 +17,6 @@ data
 
 # ios specific
 .DS_store
+
+docs-prep
+
