@@ -56,9 +56,7 @@ public class Controller implements CSProcess {
     Alternative alternative = new Alternative(serializeInputs());
 
     while (true) {
-      System.out.println("Controller: Entering alternative");
       guardIndex = alternative.fairSelect();
-      System.out.println("Controller: selected " + guardIndex + " from alternative");
 
       if (guardIndex < mNumberOfClients) { // wiadomość od klienta
         int index = guardIndex;
@@ -88,7 +86,6 @@ public class Controller implements CSProcess {
         sendResponseToClient(response, index);
       } else { // wiadomość od bufora
         int index = guardIndex - mNumberOfClients;
-        System.out.println("Controller: Received message from buffer " + index);
         Confirmation confirmation = (Confirmation) mBufferChannels[index].readEndpointFor(this).read();
 
         // Regardless exact operation status, we report that buffer is now free
@@ -100,12 +97,10 @@ public class Controller implements CSProcess {
   }
 
   private void sendNotificationToBuffer(Notification notification, int bufferID) {
-    System.out.println("Controller: Sending notification to buffer " + bufferID);
     mBufferChannels[bufferID].writeEndpointFor(this).write(notification);
   }
 
   private void sendResponseToClient(Response response, int clientID) {
-    System.out.println("Controller: Sending response to client " + clientID);
     mClientChannels[clientID].writeEndpointFor(this).write(response);
   }
 }

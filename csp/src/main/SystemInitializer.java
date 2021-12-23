@@ -31,7 +31,6 @@ public class SystemInitializer {
       final int nBuffers,
       final int[] bufferCapacities
   ) {
-    System.out.println("System initialization started");
     mNumberOfProducers = nProducers;
     mNumberOfConsumers = nConsumers;
     mNumberOfBuffers = nBuffers;
@@ -55,18 +54,15 @@ public class SystemInitializer {
     mBufferServerChannels = new HalfDuplexChannel[mNumberOfBuffers];
 
     createConnectionChannels();
-    System.out.println("System initialization completed");
   }
 
   private void initProducers() {
-    System.out.println("Initializing producers");
     for (int i = 0; i < mNumberOfProducers; ++i) {
       mProducers[i] = new Producer(UnitPortionGenerator::new);
     }
   }
 
   private void initConsumers() {
-    System.out.println("Initializing consumers");
     for (int i = 0; i < mNumberOfConsumers; ++i) {
       mConsumers[i] = new Consumer(UnitPortionGenerator::new);
     }
@@ -82,7 +78,6 @@ public class SystemInitializer {
   }
 
   private void initBuffers() {
-    System.out.println("Initializing buffers");
     if (mBufferCapacities.length == 1) {
       for (int i = 0; i < mNumberOfBuffers; ++i) {
         mBuffers[i] = new Buffer(mBufferCapacities[0], i);
@@ -95,7 +90,6 @@ public class SystemInitializer {
   }
 
   private void createConnectionChannels() {
-    System.out.println("Creating connections");
     for (int i = 0; i < mNumberOfProducers; ++i) {
       mClientServerChannels[i] = new HalfDuplexChannel(mProducers[i], mController);
       mProducers[i].setServerChannel(mClientServerChannels[i]);

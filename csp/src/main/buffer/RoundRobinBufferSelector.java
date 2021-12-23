@@ -23,7 +23,6 @@ public class RoundRobinBufferSelector extends BufferSelector {
   }
 
   private BufferEntryPair getBufferForConsumption(final int resources) {
-    System.out.println("RRBS: Getting buffer for consumption");
     int index = mConsumptionBufferIndex;
     int processedBuffers = 0;
 
@@ -36,16 +35,13 @@ public class RoundRobinBufferSelector extends BufferSelector {
 
     if (processedBuffers < mNumberOfBuffers) {
       mConsumptionBufferIndex = index;
-      System.out.println("RRBS: Accepting consumption for buffer " + index);
       return new BufferEntryPair(mBufferSet[mConsumptionBufferIndex], mConsumptionBufferIndex);
     } else {
-      System.out.println("RRBS: Rejecting consumption");
       return null;
     }
   }
 
   private BufferEntryPair getBufferForProduction(final int resources) {
-    System.out.println("RRBS: Getting buffer for production");
     int index = mProductionBufferIndex;
     int processedBuffers = 0;
 
@@ -58,10 +54,8 @@ public class RoundRobinBufferSelector extends BufferSelector {
 
     if (processedBuffers < mNumberOfBuffers) {
       mProductionBufferIndex = index;
-      System.out.println("RRBS: Accepting production for buffer " + index);
       return new BufferEntryPair(mBufferSet[mProductionBufferIndex], mProductionBufferIndex);
     } else {
-      System.out.println("RRBS: Rejecting production");
       return null;
     }
   }

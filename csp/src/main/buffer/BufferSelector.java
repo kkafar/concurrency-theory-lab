@@ -43,7 +43,6 @@ abstract public class BufferSelector {
   abstract public BufferEntryPair getBufferForOperation(RequestType requestType, int resources);
 
   public void lockBuffer(int i, RequestType requestType) {
-    System.out.println("BufferSelector: Lock buffer " + i);
     if (mBufferStatus[i]) {
       throw new IllegalStateException("BufferSelector: Buffer " + i + " already locked");
     }
@@ -56,7 +55,6 @@ abstract public class BufferSelector {
   }
 
   public void unlockBuffer(int i) {
-    System.out.println("BufferSelector: Unlock buffer " + i);
     if (!mBufferStatus[i]) {
       throw new IllegalStateException("BufferSelector: Attempt to unlock not locked buffer " + i);
     }
