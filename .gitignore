@@ -13,3 +13,7 @@ todo.md
 data
 
 .vscode
+/csp/lib/
+
+# ios specific
+.DS_store

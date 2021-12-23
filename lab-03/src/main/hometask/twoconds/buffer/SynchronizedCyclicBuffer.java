@@ -4,7 +4,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SynchronizedCyclicBuffer {
-  private final ReentrantLock lock = new ReentrantLock();
+  private final ReentrantLock lock = new ReentrantLock(true);
   private final Condition producers = lock.newCondition();
   private final Condition consumers = lock.newCondition();
 
