@@ -54,4 +54,15 @@ public class OperationCountTracker {
       default -> throw new IllegalArgumentException("Unsupported operation status");
     }
   }
+
+  public String getSummary() {
+    return "Description: " + mTrackedObjectDescription +
+        "\nCompleted: " + mCompletedOperations +
+        "\nFailed: " + mFailedOperations +
+        "\nRejected: " + mRejectedOperations + "\n";
+  }
+
+  public String toString() {
+    return getSummary();
+  }
 }
