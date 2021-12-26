@@ -19,6 +19,10 @@ public class OperationCountTracker {
     mTrackedObjectDescription = description;
   }
 
+  public void setDescription(String description) {
+    mTrackedObjectDescription = description;
+  }
+
   public int getNumberOfCompletedOperations() {
     return mCompletedOperations;
   }
