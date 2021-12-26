@@ -2,7 +2,6 @@ package main.common.messages;
 
 import main.buffer.Buffer;
 import main.common.HalfDuplexChannel;
-import org.jcsp.lang.One2OneChannel;
 
 public class Response {
   private final IntentStatus mIntentStatus;
