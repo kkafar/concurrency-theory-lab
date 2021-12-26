@@ -16,12 +16,15 @@ abstract public class Client implements CSProcess {
 
   protected OperationCountTracker mOperationCountTracker;
 
-  public Client(PortionGeneratorFactory portionGeneratorFactory) {
+  protected final int mID;
+
+  public Client(PortionGeneratorFactory portionGeneratorFactory, int id) {
     mPortionGenerator = portionGeneratorFactory.create();
     mChannelWithServer = null;
     mOperationPermissionGranted = false;
     mOperationChannel = null;
     mOperationCountTracker = new OperationCountTracker();
+    mID = id;
     setDescriptionInOperationCountTracker();
   }
 
@@ -92,6 +95,8 @@ abstract public class Client implements CSProcess {
       Confirmation confirmation = awaitBufferConfirmationForRequest(request);
 
       mOperationCountTracker.reportOperation(confirmation.getOperationStatus());
+
+      System.out.println(mOperationCountTracker);
     }
   }
 

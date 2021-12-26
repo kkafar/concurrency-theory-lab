@@ -18,7 +18,7 @@ public class Controller implements CSProcess {
   public Controller(
       BufferSelector bufferSelector
   ) {
-    mOperationCountTracker = new OperationCountTracker();
+    mOperationCountTracker = new OperationCountTracker("Controller");
     mBufferSelector = bufferSelector;
     mClientChannels = null;
     mBufferChannels = null;
@@ -92,6 +92,8 @@ public class Controller implements CSProcess {
         mBufferSelector.unlockBuffer(index);
 
         mOperationCountTracker.reportOperation(confirmation.getOperationStatus());
+
+        System.out.println(mOperationCountTracker);
       }
     }
   }

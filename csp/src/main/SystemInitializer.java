@@ -42,8 +42,9 @@ public class SystemInitializer {
     mConsumers = new Consumer[mNumberOfConsumers];
     mBuffers = new Buffer[mNumberOfBuffers];
 
-    initProducers();
-    initConsumers();
+//    initProducers();
+//    initConsumers();
+    initClients();
     initBuffers();
 
     BufferSelector bufferSelector = new RoundRobinBufferSelector(mBuffers, mBufferCapacities);
@@ -56,24 +57,24 @@ public class SystemInitializer {
     createConnectionChannels();
   }
 
-  private void initProducers() {
-    for (int i = 0; i < mNumberOfProducers; ++i) {
-      mProducers[i] = new Producer(UnitPortionGenerator::new);
-    }
-  }
-
-  private void initConsumers() {
-    for (int i = 0; i < mNumberOfConsumers; ++i) {
-      mConsumers[i] = new Consumer(UnitPortionGenerator::new);
-    }
-  }
+//  private void initProducers() {
+//    for (int i = 0; i < mNumberOfProducers; ++i) {
+//      mProducers[i] = new Producer(UnitPortionGenerator::new);
+//    }
+//  }
+//
+//  private void initConsumers() {
+//    for (int i = 0; i < mNumberOfConsumers; ++i) {
+//      mConsumers[i] = new Consumer(UnitPortionGenerator::new);
+//    }
+//  }
 
   private void initClients() {
     for (int i = 0; i < mNumberOfProducers; ++i) {
-      mProducers[i] = new Producer(UnitPortionGenerator::new);
+      mProducers[i] = new Producer(UnitPortionGenerator::new, i);
     }
     for (int i = 0; i < mNumberOfConsumers; ++i) {
-      mConsumers[i] = new Consumer(UnitPortionGenerator::new);
+      mConsumers[i] = new Consumer(UnitPortionGenerator::new, i + mNumberOfProducers);
     }
   }
 

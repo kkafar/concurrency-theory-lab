@@ -3,8 +3,8 @@ package main.actors;
 import main.common.messages.RequestType;
 
 public class Consumer extends Client {
-  public Consumer(PortionGeneratorFactory portionGeneratorFactory) {
-    super(portionGeneratorFactory);
+  public Consumer(PortionGeneratorFactory portionGeneratorFactory, int id) {
+    super(portionGeneratorFactory, id);
   }
 
   @Override
@@ -14,6 +14,6 @@ public class Consumer extends Client {
 
   @Override
   protected void setDescriptionInOperationCountTracker() {
-    mOperationCountTracker.setDescription("Consumer");
+    mOperationCountTracker.setDescription("Consumer" + mID);
   }
 }

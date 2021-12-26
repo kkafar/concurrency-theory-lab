@@ -20,7 +20,7 @@ public class Buffer implements CSProcess {
   ) {
     mCapacity = capacity;
     mCurrentCapacity = 0;
-    mOperationCountTracker = new OperationCountTracker();
+    mOperationCountTracker = new OperationCountTracker("Buffer " + id);
     mChannelWithServer = null;
     mID = id;
   }
@@ -58,6 +58,8 @@ public class Buffer implements CSProcess {
       sendConfirmationToClient(confirmation, notification.getChannel().writeEndpointFor(this));
 
       mOperationCountTracker.reportOperation(operationStatus);
+
+      System.out.println(mOperationCountTracker);
     }
   }
 
