@@ -11,4 +11,9 @@ public class Consumer extends Client {
   protected RequestType getRequestType() {
     return RequestType.CONSUME;
   }
+
+  @Override
+  protected void setDescriptionInOperationCountTracker() {
+    mOperationCountTracker.setDescription("Consumer");
+  }
 }

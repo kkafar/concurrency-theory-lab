@@ -22,6 +22,7 @@ abstract public class Client implements CSProcess {
     mOperationPermissionGranted = false;
     mOperationChannel = null;
     mOperationCountTracker = new OperationCountTracker();
+    setDescriptionInOperationCountTracker();
   }
 
   public void setServerChannel(HalfDuplexChannel channel) {
@@ -29,6 +30,8 @@ abstract public class Client implements CSProcess {
   }
 
   abstract protected RequestType getRequestType();
+
+  abstract protected void setDescriptionInOperationCountTracker();
 
   protected boolean isPermissionGranted() {
     return mOperationPermissionGranted;

@@ -12,4 +12,9 @@ public class Producer extends Client {
   protected RequestType getRequestType() {
     return RequestType.PRODUCE;
   }
+
+  @Override
+  protected void setDescriptionInOperationCountTracker() {
+    mOperationCountTracker.setDescription("Producer");
+  }
 }
