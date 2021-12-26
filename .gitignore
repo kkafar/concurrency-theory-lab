@@ -16,9 +16,12 @@ data
 /csp/lib/
 
 # ios specific
-.DS_store
+.DS_Store
 
 docs-prep/*
 
 test-module/*
 
+csp/screenshots/
+
+csp/.DS_Store

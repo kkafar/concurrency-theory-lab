@@ -51,7 +51,6 @@ abstract public class Client implements CSProcess {
   }
 
   protected Response awaitServerResponseForIntent() {
-    // czy nie trzeba wykorzystać jakiejś alternatywy? To będzie zwykła operacja blokująca?
     return (Response) mChannelWithServer.readEndpointFor(this).read();
   }
 
