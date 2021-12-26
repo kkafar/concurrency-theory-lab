@@ -103,4 +103,8 @@ public class Controller implements CSProcess {
   private void sendResponseToClient(Response response, int clientID) {
     mClientChannels[clientID].writeEndpointFor(this).write(response);
   }
+
+  public OperationCountTracker getOperationCountTracker() {
+    return mOperationCountTracker;
+  }
 }

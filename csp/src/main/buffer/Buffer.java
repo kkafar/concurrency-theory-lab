@@ -96,4 +96,8 @@ public class Buffer implements CSProcess {
   private Request awaitForRequestFromClient(HalfDuplexChannel requestChannel) {
     return (Request) requestChannel.readEndpointFor(this).read();
   }
+
+  public OperationCountTracker getOperationCountTracker() {
+    return mOperationCountTracker;
+  }
 }

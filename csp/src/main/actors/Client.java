@@ -90,4 +90,8 @@ abstract public class Client implements CSProcess {
       mOperationCountTracker.reportOperation(confirmation.getOperationStatus());
     }
   }
+
+  public OperationCountTracker getOperationCountTracker() {
+    return mOperationCountTracker;
+  }
 }
