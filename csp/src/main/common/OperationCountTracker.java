@@ -6,11 +6,17 @@ public class OperationCountTracker {
   protected int mCompletedOperations;
   protected int mRejectedOperations;
   protected int mFailedOperations;
+  protected String mTrackedObjectDescription;
 
   public OperationCountTracker() {
+    this("No description provided");
+  }
+
+  public OperationCountTracker(String description) {
     mCompletedOperations = 0;
     mRejectedOperations = 0;
     mFailedOperations = 0;
+    mTrackedObjectDescription = description;
   }
 
   public int getNumberOfCompletedOperations() {
