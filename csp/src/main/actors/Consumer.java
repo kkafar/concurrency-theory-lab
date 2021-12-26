@@ -14,6 +14,6 @@ public class Consumer extends Client {
 
   @Override
   protected void setDescriptionInOperationCountTracker() {
-    mOperationCountTracker.setDescription("Consumer" + mID);
+    mOperationCountTracker.setDescription("Consumer " + mID);
   }
 }
