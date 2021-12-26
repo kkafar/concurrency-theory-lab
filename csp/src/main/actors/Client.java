@@ -83,6 +83,7 @@ abstract public class Client implements CSProcess {
       }
 
       // wykonanie operacji na buforze
+      assert serverResponseForIntent != null : "Null server response";
       Request request = new Request(getRequestType(), serverResponseForIntent.getChannel(), intent.getResources());
       sendRequestToBuffer(request);
       Confirmation confirmation = awaitBufferConfirmationForRequest(request);
